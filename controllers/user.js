@@ -15,12 +15,17 @@ exports.postSignup = async (req, res, next) => {
     try {
         const { name, email, password } = req.body;
 
+        const existingUser = await User.findOne({ email: email });
+        if (existingUser) {
+            return res.status(400).json({ error: "User already exists" });
+        }
+
         const UserData = await User.create({
             name: name,
             email: email,
             password: password
         });
-        console.log(req.body+ 'values');
+        res.redirect('/user/signup')    
         console.log(UserData);
     } catch (err) {
         console.log(err);
