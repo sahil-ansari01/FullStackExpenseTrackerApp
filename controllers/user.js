@@ -1,4 +1,5 @@
 const path = require('path');
+const User = require('../models/user');
 
 exports.getSignup  = async (req, res, next) => {
     try {
@@ -11,5 +12,18 @@ exports.getSignup  = async (req, res, next) => {
 }
 
 exports.postSignup = async (req, res, next) => {
-    res.redirect('/user/signup')
+    try {
+        const { name, email, password } = req.body;
+
+        const UserData = await User.create({
+            name: name,
+            email: email,
+            password: password
+        });
+        console.log(req.body+ 'values');
+        console.log(UserData);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json( { error: err.message });
+    }
 }
