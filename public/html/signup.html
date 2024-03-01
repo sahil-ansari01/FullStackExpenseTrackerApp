@@ -9,13 +9,10 @@
 <body>
 
 <div class="container mt-5">
-  <div class="signup">
-    
-  </div>
   <div class="row justify-content-center">
     <div class="col-md-6">
       <h2 class="mb-4">Signup</h2>
-      <form action="/user/signup" method="POST" id="signup-form">
+      <form onsubmit="signup(event)">
         <div class="form-group">
           <label for="email">Email address</label>
           <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Enter email" required>
@@ -30,12 +27,17 @@
           <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
         </div>
         <button type="submit" class="btn btn-primary">Sign Up</button>
-        <button type="button" class="btn btn-primary mx-2" id="loginButton">Login</button>
+        <button type="button" class="btn btn-primary mx-2" id="loginButton">Already User - Login</button>
       </form>
+
+      <div class="error mt-3" id="error">
+
+      </div>
     </div>
   </div>
 </div>
 
 <script src="../js/signup.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js"></script>
 </body>
 </html>
