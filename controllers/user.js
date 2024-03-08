@@ -47,3 +47,21 @@ exports.getLogin = async (req, res, next) => {
         });
     }
 };
+
+exports.postLogin = async (req, res, next) => {
+    try {
+        const email = req.body.email;
+        const password = req.body.password;
+        
+        const user = await User.findOne({ where: { email: email } });
+
+        if (email !== user.email && password !== user.password) {
+            return res.status(401).json({message: 'User not authorized'});
+        } else {
+            res.status(200).json({message: 'User login successfully'});   
+        }
+
+    } catch (err) {
+        console.log(err);
+    }
+}

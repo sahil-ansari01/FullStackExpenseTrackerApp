@@ -11,10 +11,14 @@ async function login(e) {
             password: e.target.password.value
         }
 
-        console.log(loginDetails);
         axios.post('http://localhost:3000/user/login', loginDetails)
         .then(res => {
-            alert(res.data.message)
+            if (res.status === 200) {
+                alert(res.data.message)
+            } else if (res.status === 401) {
+                alert(res.data.message)
+            }
+            
         })
     } catch (err) {
         alert(err);
