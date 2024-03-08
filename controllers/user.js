@@ -54,6 +54,9 @@ exports.postLogin = async (req, res, next) => {
         const password = req.body.password;
         
         const user = await User.findOne({ where: { email: email } });
+        if (!user) {
+            return res.json({message: 'this email already exist!'})
+        }
 
         if (email !== user.email && password !== user.password) {
             return res.status(401).json({message: 'User not authorized'});
