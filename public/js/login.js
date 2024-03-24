@@ -9,18 +9,17 @@ async function login(e) {
         const loginDetails = {
             email: e.target.email.value,
             password: e.target.password.value
-        }
+        };
 
-        axios.post('http://localhost:3000/user/login', loginDetails)
-        .then(res => {
-            if (res.status === 200) {
-                alert(res.data.message)
-            } else if (res.status === 401) {
-                alert(res.data.message)
-            }
-            
-        })
+        const res = await axios.post('http://localhost:3000/user/login', loginDetails);
+        
+        if (res.status === 200) {
+            alert(res.data.message);
+            window.location.href = '/expense/getExpense';
+        } else {
+            alert(res.data.message);
+        }
     } catch (err) {
-        alert(err);
+        alert(err.res.data.message);
     }
 }

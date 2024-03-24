@@ -75,6 +75,7 @@ exports.postLogin = async (req, res, next) => {
         } else {
             res.status(404).json({success: false, message: 'User do not exist!'})
         }
+
     } catch (err) {
         res.status(500).json({success: false, message: err})
     }
