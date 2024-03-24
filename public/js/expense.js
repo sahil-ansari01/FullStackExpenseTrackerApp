@@ -41,18 +41,25 @@ function renderExpenses() {
       const expenseTableBody = document.getElementById('expenseTableBody');
       expenseTableBody.innerHTML = '';
 
-      expenseData.forEach(expense => {
-        const newRow = document.createElement("tr");
-        newRow.innerHTML = `
-          <td>${expense.spentAmount}</td>
-          <td>${expense.description}</td>
-          <td>${expense.category}</td>
-          <td><button class="btn btn-danger delete-btn">Delete</button></td>
-        `;
-        expenseTableBody.appendChild(newRow);
-      });
+      if (expenseData) { 
+        expenseData.forEach(expense => {
+          const newRow = document.createElement("tr");
+          newRow.innerHTML = `
+            <td>${expense.amount}</td> <!-- Use expense.amount instead of expense.spentAmount -->
+            <td>${expense.description}</td>
+            <td>${expense.category}</td>
+            <td><button class="btn btn-danger delete-btn">Delete</button></td>
+          `;
+          expenseTableBody.appendChild(newRow);
+        });
+      }
+    })
+    .catch(err => {
+      console.error(err);
     });
 }
+
+
 
 // Add event listener to handle delete buttons
 document.getElementById("expenseTableBody").addEventListener("click", function(event) {
