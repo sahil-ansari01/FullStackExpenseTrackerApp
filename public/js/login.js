@@ -15,7 +15,7 @@ async function login(e) {
         
         if (res.status === 200) {
             alert(res.data.message);
-            window.location.href = '/expense/getExpense';
+            window.location.href = '../html/expense.html';
         } else {
             alert(res.data.message);
         }

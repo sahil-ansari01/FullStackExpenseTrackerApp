@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../util/database');
+const User = require('./users');
 
 const Expense = sequelize.define('expense', {
     id: {
@@ -8,7 +9,7 @@ const Expense = sequelize.define('expense', {
         primaryKey: true,
         allowNull: false
     },
-    amount: {
+    spentAmount: {
         type: Sequelize.DECIMAL(10, 2), // Assuming the amount is in decimal format
         allowNull: false
     },
@@ -21,5 +22,7 @@ const Expense = sequelize.define('expense', {
         allowNull: false
     }
 });
+
+Expense.belongsTo(User);
 
 module.exports = Expense;
