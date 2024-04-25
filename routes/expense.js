@@ -2,11 +2,12 @@ const path = require('path');
 const express = require('express');
 const router = express.Router();
 const expenseController = require('../controllers/expense');
+const userAuth = require('../middleware/auth')
 
-router.get('/getExpense', expenseController.getExpense);
+router.get('/getExpense', userAuth.authenticate, expenseController.getExpense);
 
-router.post('/postExpense', expenseController.postExpense);
+router.post('/postExpense',userAuth.authenticate, expenseController.postExpense);
 
-router.delete('/deleteExpense/:id', expenseController.deleteExpense);
+router.delete('/deleteExpense/:id', userAuth.authenticate, expenseController.deleteExpense);
 
 module.exports = router;

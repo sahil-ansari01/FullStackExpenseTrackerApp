@@ -1,14 +1,27 @@
 const path = require('path');
-const Expense = require('../models/expenses');
+const Expense = require('../models/expense');
 
 exports.getExpense = async (req, res, next) => {
     try {
-        const expenses = await Expense.findAll();
+        const expenses = await Expense.findAll({where: { userId: req.user.id}});
         res.status(200).json({ expenses: expenses }); 
     } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+        res.status(500).json({ error: err.message });  
+        console.log(err); 
+    }   
 };
+
+// exports.getExpense = (req, res, next) => {
+    
+//     req.user.getExpense().then(expenses => {
+//         return res.status(200).json({expenses, success: true})
+//     })
+//     .catch(err => {
+//         console.log(err);
+//         return res.status(500).json({error: err, success: false})
+//     })
+// };
+
 
 
 exports.postExpense = async (req, res, next) => {
@@ -19,6 +32,7 @@ exports.postExpense = async (req, res, next) => {
 
     } catch (err) {
         res.status(500).json({ error: err.message });
+        console.log(err);
     }
 }
 

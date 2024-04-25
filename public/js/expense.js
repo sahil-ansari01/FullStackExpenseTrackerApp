@@ -17,17 +17,22 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     try {
-      const res = await axios.post('http://localhost:3000/expense/postExpense', expenseDetails);
-      console.log(res.data);
+      const res = await axios.post('http://localhost:3000/expense/postExpense', expenseDetails, { headers: { "Authorization": token }});  
       renderExpenses();
     } catch (err) {
       console.error(err);
     }
+
+    document.getElementById('spentAmount').value = "";
+    document.getElementById('description').value = "";
+    document.getElementById('category').value = "Food";
+
   });
 });
 
 function fetchExpense() {
-  return axios.get('http://localhost:3000/expense/getExpense')
+  const token = localStorage.getItem('token')
+  return axios.get('http://localhost:3000/expense/getExpense', { headers: { "Authorization": token }}) 
     .then(res => {
       return res.data.expenses;
     })
@@ -63,14 +68,12 @@ function renderExpenses() {
       });
 }
 
-
 // Add event listener to handle delete buttons
 document.getElementById("expenseTableBody").addEventListener("click", function (event) {
   if (event.target.classList.contains("delete-btn")) {
       const row = event.target.closest("tr");
       const expenseId = row.dataset.id; // Retrieve expense ID from data-id attribute
-      console.log(expenseId); // Ensure you're getting the correct expense ID
-      axios.delete(`http://localhost:3000/expense/deleteExpense/${expenseId}`)
+      axios.delete(`http://localhost:3000/expense/deleteExpense/${expenseId}`, { headers: { "Authorization": token }})
           .then(() => {
               row.remove();
           })

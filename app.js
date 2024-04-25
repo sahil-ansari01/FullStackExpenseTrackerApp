@@ -3,8 +3,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const sequelize = require('./util/database');
 
-const Expense = require("./models/expenses");
-const User = require("./models/users");
+const Expense = require("./models/expense");
+const User = require("./models/user");
 
 var cors = require('cors');
 

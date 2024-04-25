@@ -1,6 +1,7 @@
 const path = require('path');
-const User = require('../models/users');
+const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 function isStringValidate(string) {
     return string === undefined || string.length === 0;
@@ -52,9 +53,13 @@ exports.getLogin = async (req, res, next) => {
     }
 };
 
+function generateAccessToken(id,name) {
+    return jwt.sign({userId : id , name: name},'secretkey')
+}
+
 exports.postLogin = async (req, res, next) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, id } = req.body;
         if (isStringValidate(email) || isStringValidate(password)) {
             return res.status(400).json({message: 'Email or Password is missing!'});
         }
@@ -66,8 +71,9 @@ exports.postLogin = async (req, res, next) => {
                     throw new Error('Something went wrong!');
                 }
 
+                const token = generateAccessToken(user[0].id, user[0].name);
                 if (result === true) {
-                    res.status(200).json({success: true, message: 'User logged in successfully!'})
+                    return res.status(200).json({success: true, message: 'User logged in successfully!', token: token})
                 } else {
                     return res.status(400).json({success: false, message: 'Password is incorrect!'})
                 }
