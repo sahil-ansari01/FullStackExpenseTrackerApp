@@ -11,19 +11,6 @@ exports.getExpense = async (req, res, next) => {
     }   
 };
 
-// exports.getExpense = (req, res, next) => {
-    
-//     req.user.getExpense().then(expenses => {
-//         return res.status(200).json({expenses, success: true})
-//     })
-//     .catch(err => {
-//         console.log(err);
-//         return res.status(500).json({error: err, success: false})
-//     })
-// };
-
-
-
 exports.postExpense = async (req, res, next) => {
     try {
         const { spentAmount, description, category, userId } = req.body; 

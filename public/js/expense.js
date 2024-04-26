@@ -1,3 +1,6 @@
+const token = localStorage.getItem('token')
+console.log(token);
+
 document.addEventListener('DOMContentLoaded', function () {
   renderExpenses();
 
@@ -31,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function fetchExpense() {
-  const token = localStorage.getItem('token')
   return axios.get('http://localhost:3000/expense/getExpense', { headers: { "Authorization": token }}) 
     .then(res => {
       return res.data.expenses;
