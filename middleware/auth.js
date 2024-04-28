@@ -12,13 +12,10 @@
     const authenticate = async (req, res, next) => {
         try {
             const token = req.header('Authorization');
-            console.log(token);
             const user = jwt.verify(token, secretKey);
-            console.log('UserId: ', user.userId);
             User.findByPk(user.userId)
             .then(user => {
                 req.user = user; 
-                console.log(user);
                 next();
             })
             .catch(err => {

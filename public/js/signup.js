@@ -12,7 +12,6 @@ async function signup(e) {
             password: e.target.password.value
         }
         
-        console.log(signupDetails);
         const response = await axios.post('http://localhost:3000/user/signup', signupDetails)
 
         if (response.status === 201) {

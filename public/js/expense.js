@@ -1,5 +1,4 @@
 const token = localStorage.getItem('token')
-console.log(token);
 
 document.addEventListener('DOMContentLoaded', function () {
   renderExpenses();
@@ -16,7 +15,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const expenseDetails = {
       spentAmount: spentAmount,
       description: description,
-      category: category
+      category: category,
+      userId: 1
     };
 
     try {
@@ -61,8 +61,6 @@ function renderExpenses() {
                   `;
                   expenseTableBody.appendChild(newRow);
               });
-          } else {
-              console.log("No expenses found.");
           }
       })
       .catch(err => {
