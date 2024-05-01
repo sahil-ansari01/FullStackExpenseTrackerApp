@@ -29,6 +29,7 @@
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^2.3.3",
     "pug": "^3.0.2",
+    "razorpay": "^0.0.0",
     "sequelize": "^6.37.1"
   }
 }
