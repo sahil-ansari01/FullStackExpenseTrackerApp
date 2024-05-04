@@ -26,10 +26,11 @@
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^2.3.3",
     "pug": "^3.0.2",
-    "razorpay": "^0.0.0",
+    "razorpay": "^2.9.3",
     "sequelize": "^6.37.1"
   }
 }

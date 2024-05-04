@@ -1,4 +1,5 @@
 const Razorpay = require('razorpay');
+require('dotenv').config();
 const Order = require('../models/orders');
 
 const purchasepremium = async (req, res) => {
@@ -26,3 +27,9 @@ const purchasepremium = async (req, res) => {
         res.status(403).json({message: 'Something went wrong', error: err})
     }
 }
+
+const updateTransactionStatus = async (req, res) => {
+    // Controller logic for updating transaction status
+};
+
+module.exports = { purchasepremium,updateTransactionStatus };

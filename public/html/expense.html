@@ -4,60 +4,82 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Expense Tracker</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    /* Custom Styles */
+    body {
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .container {
+      max-width: 1200px;
+    }
+    .btn-primary {
+      background-color: #805AD5;
+    }
+    .btn-primary:hover {
+      background-color: #6B46C1;
+    }
+    .btn-danger {
+      background-color: #e36d6d;
+      padding: 5px 10px;
+      margin-bottom: 5px; 
+      border-radius: 5px;
+    }
+    .btn-danger:hover {
+      background-color: #DC2626;
+    }
+  </style>
 </head>
-<body>
+<body class="bg-gray-100">
 
 <!-- Expense Form -->
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <h2 class="mb-4">Add Expense</h2>
-      <form id="expenseForm">
-        <div class="form-group">
-          <label for="spentAmount">Money Spent</label>
-          <input type="number" class="form-control" id="spentAmount" placeholder="Enter amount">
-        </div>
-        <div class="form-group">
-          <label for="description">Description</label>
-          <input type="text" class="form-control" id="description" placeholder="Enter description">
-        </div>
-        <div class="form-group">
-          <label for="category">Category</label>
-          <select class="form-control" id="category">
-            <option value="Food">Food</option>
-            <option value="Petrol">Petrol</option>
-            <option value="Salary">Salary</option>
-            <!-- Add more categories here -->
-          </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Add Expense</button> 
-      </form>
-      <button id="rzp-button1" class="btn btn-primary" style="margin-top: 10px;">Buy Premium</button>
-      <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    </div>
+<div class="container mx-auto mt-8 px-4 lg:px-0 flex justify-center">
+  <div class="max-w-lg w-full bg-white p-8 rounded-lg shadow-md">
+    <h2 class="text-2xl font-semibold mb-4 text-center text-gray-800">Add Expense</h2>
+    <form id="expenseForm" class="space-y-4">
+      <div>
+        <label for="spentAmount" class="block text-sm font-semibold text-gray-600">Money Spent</label>
+        <input type="number" class="w-full px-4 py-2 rounded-lg bg-gray-100 border focus:border-purple-400 focus:bg-white" id="spentAmount" placeholder="Enter amount">
+      </div>
+      <div>
+        <label for="description" class="block text-sm font-semibold text-gray-600">Description</label>
+        <input type="text" class="w-full px-4 py-2 rounded-lg bg-gray-100 border focus:border-purple-400 focus:bg-white" id="description" placeholder="Enter description">
+      </div>
+      <div>
+        <label for="category" class="block text-sm font-semibold text-gray-600">Category</label>
+        <select class="w-full px-4 py-2 rounded-lg bg-gray-100 border focus:border-purple-400 focus:bg-white" id="category">
+          <option value="Food">Food</option>
+          <option value="Petrol">Petrol</option>
+          <option value="Salary">Salary</option>
+          <!-- Add more categories here -->
+        </select>
+      </div>
+      <button type="submit" class="w-full btn-primary text-white font-semibold rounded-lg px-4 py-2 transition-colors duration-300 ease-in-out transform hover:bg-purple-600 focus:outline-none focus:bg-purple-600">Add Expense</button>
+    </form>
+    <button id="rzp-button1" class="w-full mt-4 btn-primary text-white font-semibold rounded-lg px-4 py-2 transition-colors duration-300 ease-in-out transform hover:bg-purple-600 focus:outline-none focus:bg-purple-600">Buy Premium</button>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   </div>
 </div>
 
 <!-- Expense Table -->
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8">
-      <h2 class="mb-4">Expense Table</h2>
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Amount</th>
-            <th scope="col">Description</th>
-            <th scope="col">Category</th>
-            <th scope="col">Action</th>
-          </tr>
-        </thead>
-        <tbody id="expenseTableBody">
-          <!-- Expense rows will be dynamically added here -->
-        </tbody>
-      </table>
-    </div>
+<div class="container mx-auto mt-8 px-4 lg:px-0 flex justify-center">
+  <div class="max-w-lg w-full bg-white p-8 rounded-lg shadow-md">
+    <h2 class="text-2xl font-semibold mb-4 text-center text-gray-800">Expense Table</h2>
+    <table class="w-full">
+      <thead>
+        <tr>
+          <th class="px-4 py-2 text-sm font-semibold text-gray-600">Amount</th>
+          <th class="px-4 py-2 text-sm font-semibold text-gray-600">Description</th>
+          <th class="px-4 py-2 text-sm font-semibold text-gray-600">Category</th>
+          <th class="px-4 py-2 text-sm font-semibold text-gray-600">Action</th>
+        </tr>
+      </thead>
+      <tbody id="expenseTableBody">
+        <!-- Expense rows will be dynamically added here -->
+      </tbody>
+    </table>
   </div>
 </div>
 

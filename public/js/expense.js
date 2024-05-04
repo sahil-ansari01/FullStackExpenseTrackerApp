@@ -54,11 +54,13 @@ function renderExpenses() {
                   const newRow = document.createElement("tr");
                   newRow.dataset.id = expense.id; // Set the expense ID as data-id
                   newRow.innerHTML = `
-                      <td>${expense.spentAmount}</td>
-                      <td>${expense.description}</td>
-                      <td>${expense.category}</td>
-                      <td><button class="btn btn-danger delete-btn">Delete</button></td>
+                      <td class="text-center">${expense.spentAmount}</td>
+                      <td class="text-center">${expense.description}</td>
+                      <td class="text-center">${expense.category}</td>
+                      <td class="text-center"><button class="btn btn-danger delete-btn">Delete</button></td>
+
                   `;
+
                   expenseTableBody.appendChild(newRow);
               });
           }
@@ -85,8 +87,7 @@ document.getElementById("expenseTableBody").addEventListener("click", function (
 
 document.getElementById('rzp-button1').addEventListener('click', async function(e) {
   const token = localStorage.getItem('token');
-  const response = await axios.get('http://localhost:3000/purchase/premiummember', { headers : { "Authorization": token }});
-  console.log(response);
+  const response = await axios.get('http://localhost:3000/purchase/premiummembership', { headers : { "Authorization": token }});
   var options = 
   {
     "key": response.data.key_id,
@@ -96,6 +97,8 @@ document.getElementById('rzp-button1').addEventListener('click', async function(
         order_id: options.order_id,
         payment_id: response.razorpay_payment_id,
       }, { headers: { "Authorization": token }})
+
+      console.log(response.data.key_id);
 
       alert('You are a Premium User now!')
     },
