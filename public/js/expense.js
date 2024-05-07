@@ -2,6 +2,7 @@ const token = localStorage.getItem('token')
 
 document.addEventListener('DOMContentLoaded', function () {
   renderExpenses();
+  checkIsPremiumUser();
 
   const expenseForm = document.getElementById('expenseForm');
 
@@ -86,30 +87,57 @@ document.getElementById("expenseTableBody").addEventListener("click", function (
 });
 
 document.getElementById('rzp-button1').addEventListener('click', async function(e) {
-  const token = localStorage.getItem('token');
-  const response = await axios.get('http://localhost:3000/purchase/premiummembership', { headers : { "Authorization": token }});
-  var options = 
-  {
-    "key": response.data.key_id,
-    "order_id": response.data.order.id,
-    "handler": async function (response) {
-      await axios.post('http://localhost:3000/purchase/updatetransactionstatus', {
-        order_id: options.order_id,
-        payment_id: response.razorpay_payment_id,
-      }, { headers: { "Authorization": token }})
+  try {
+    const response = await axios.get('http://localhost:3000/purchase/premiummembership', { headers : { "Authorization": token }});
 
-      console.log(response.data.key_id);
+    const options = {
+      "key": response.data.key_id,
+      "order_id": response.data.order.id,
+      "handler": async function (razorpayResponse) { // Rename the argument to avoid shadowing
+        try {
+          await axios.post('http://localhost:3000/purchase/updatetransactionstatus', {
+            order_id: response.data.order.id, // Use the outer response here
+            payment_id: razorpayResponse.razorpay_payment_id, // Use razorpayResponse
+          }, { headers: { "Authorization": token }});
+          alert('You are a Premium User now!');
+        } catch (err) {
+          console.error(err);
+          alert("Failed to update transaction status. Please try again later.");
+        }
+      },
+    };
 
-      alert('You are a Premium User now!')
-    },
-  };
+    const rzp1 = new Razorpay(options);
+    rzp1.open();
+    e.preventDefault();
 
-  const rzp1 = new Razorpay(options);
-  rzp1.open();
-  e.preventDefault();
+    rzp1.on('payment.failed', function (response){
+      console.log(response);
+      alert('Transaction Failed!')
+    });
+  } catch (err) {
+    console.error(err);
+    alert("Failed to initiate premium membership purchase. Please try again later.");
+  }
+});
 
-  rzp1.on('payment.failed', function (response){
+async function checkIsPremiumUser() {
+  try {
+    const response = await axios.get('http://localhost:3000/purchase/premiummembership', { headers: { "Authorization": token }});
+    const isPremium = response.data.isPremium;
     console.log(response);
-    alert('Transaction Failed!')
-  })
-})
+
+    if (isPremium) {
+      const rzpButton1 = document.getElementById('rzp-button1');
+      rzpButton1.disable = true;
+
+      const premiumMessage = document.createElement('span');
+      premiumMessage.textContent = 'You are a Premium User!';
+      premiumMessage.style.color = 'green';
+      expenseForm.appendChild(premiumMessage);
+    }
+  } catch (err) {
+    console.log(err);
+    alert('Failed to check premium status. Please try again later.');
+  }
+}

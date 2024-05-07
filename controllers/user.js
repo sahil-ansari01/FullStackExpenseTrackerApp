@@ -33,7 +33,7 @@ exports.signup = async (req, res, next) => {
         }
 
         bcrypt.hash(password, 10, async (err, hash) => {
-            await User.create({ name, email, password: hash });
+            await User.create({ name, email, password: hash, ispremiumuser: false });
             res.status(201).json({ message: 'User created successfully!' });
         })
 
