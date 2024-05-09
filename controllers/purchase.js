@@ -43,20 +43,19 @@ const updateTransactionStatus = async (req, res) => {
         }
 
         if (payment_id) {
+            
             await order.update({ paymentid: payment_id, status: 'SUCCESSFUL' });
             await req.user.update({ ispremiumuser: true });
-            console.log('Transaction Successful!');
             return res.status(202).json({ success: true, message: 'Transaction Successful!' });
         } else {
             await order.update({ status: 'FAILED' });
-            console.log('Transaction Failed!');
             return res.status(400).json({ success: false, message: 'Transaction Failed!' });
         }
         
     } catch(err) {
-        console.error('Error in updateTransactionStatus:', err);
+        console.error(err);
         res.status(500).json({ message: 'Something went wrong', error: err.message });
     }
 };
 
-module.exports = { purchasepremium, updateTransactionStatus };
+module.exports = { purchasepremium,updateTransactionStatus };
