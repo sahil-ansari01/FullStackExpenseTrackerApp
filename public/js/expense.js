@@ -1,8 +1,9 @@
 const token = localStorage.getItem('token')
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
+
   renderExpenses();
-  checkIsPremiumUser();
+  await checkPremiumStatus();
 
   const expenseForm = document.getElementById('expenseForm');
 
@@ -16,8 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const expenseDetails = {
       spentAmount: spentAmount,
       description: description,
-      category: category,
-      userId: 1
+      category: category
     };
 
     try {
@@ -33,6 +33,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
   });
 });
+
+async function checkPremiumStatus() {
+  try {
+      const response = await axios.get('http://localhost:3000/user/premiumstatus', { headers: { "Authorization": token } });
+      if (response.data.isPremium) {
+          replacePremiumButton();
+      }
+  } catch (err) {
+      console.error(err);
+      alert("Failed to check premium status. Please try again later.");
+  }
+}
+
+function replacePremiumButton() {
+  const premiumButton = document.getElementById('rzp-button1');
+  const premiumText = document.createElement('p');
+  premiumText.textContent = "You are a Premium User";
+  premiumButton.parentNode.replaceChild(premiumText, premiumButton);
+}
 
 function fetchExpense() {
   return axios.get('http://localhost:3000/expense/getExpense', { headers: { "Authorization": token }}) 
@@ -120,24 +139,3 @@ document.getElementById('rzp-button1').addEventListener('click', async function(
     alert("Failed to initiate premium membership purchase. Please try again later.");
   }
 });
-
-async function checkIsPremiumUser() {
-  try {
-    const response = await axios.get('http://localhost:3000/purchase/premiummembership', { headers: { "Authorization": token }});
-    const isPremium = response.data.isPremium;
-    console.log(response);
-
-    if (isPremium) {
-      const rzpButton1 = document.getElementById('rzp-button1');
-      rzpButton1.disable = true;
-
-      const premiumMessage = document.createElement('span');
-      premiumMessage.textContent = 'You are a Premium User!';
-      premiumMessage.style.color = 'green';
-      expenseForm.appendChild(premiumMessage);
-    }
-  } catch (err) {
-    console.log(err);
-    alert('Failed to check premium status. Please try again later.');
-  }
-}

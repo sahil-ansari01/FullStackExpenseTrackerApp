@@ -42,14 +42,15 @@ const updateTransactionStatus = async (req, res) => {
             return res.status(404).json({ message: 'Order not found' });
         }
 
+        // Check if payment_id exists. If it does, the transaction is successful.
         if (payment_id) {
-            
             await order.update({ paymentid: payment_id, status: 'SUCCESSFUL' });
             await req.user.update({ ispremiumuser: true });
             return res.status(202).json({ success: true, message: 'Transaction Successful!' });
         } else {
+            // If payment_id is not present, mark the transaction as FAILED.
             await order.update({ status: 'FAILED' });
-            return res.status(400).json({ success: false, message: 'Transaction Failed!' });
+            return res.status(400).json({ success: false, message: 'Transaction Failed hoga hai bot!' });
         }
         
     } catch(err) {

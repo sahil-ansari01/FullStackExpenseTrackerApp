@@ -86,3 +86,19 @@ exports.postLogin = async (req, res, next) => {
         res.status(500).json({success: false, message: err})
     }
 }
+
+exports.checkPremiumStatus = async (req, res, next) => {
+    try {
+        const userId = req.user.userId;
+        const user = await User.findByPk(userId);
+        console.log(userId);
+        if (user && user.ispremiumuser) {
+            res.status(200).json({ isPremium: true });
+        } else {
+            res.status(200).json({ isPremium: false });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};

@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user');
+const userAuth = require('../middleware/auth');
 
 router.get('/signup', userController.getSignup);
 
@@ -11,4 +12,5 @@ router.get('/login', userController.getLogin);
 
 router.post('/login', userController.postLogin);
 
+router.get('/premiumstatus', userAuth.authenticate, userController.checkPremiumStatus)
 module.exports = router;
