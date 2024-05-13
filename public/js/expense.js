@@ -3,7 +3,7 @@ const token = localStorage.getItem('token')
 document.addEventListener('DOMContentLoaded', async function () {
 
   renderExpenses();
-  await checkPremiumStatus();
+  // await checkPremiumStatus();
 
   const expenseForm = document.getElementById('expenseForm');
 
