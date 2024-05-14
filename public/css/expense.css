@@ -1,0 +1,88 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+}
+.container {
+  max-width: 1200px;
+}
+
+.btn-primary {
+  background-color: #805AD5;
+}
+.btn-primary:hover {
+  background-color: #6B46C1;
+}
+.btn-danger {
+  background-color: #e36d6d;
+  padding: 5px 10px;
+  margin-bottom: 5px; 
+  border-radius: 5px;
+}
+.btn-danger:hover {
+  background-color: #DC2626;
+}
+.premium-user {
+  width: 100%;
+  background-color: #493d5f;
+  color: #fff;
+  font-weight: bold;
+  padding: 8px 16px;
+  margin-top: .5rem;
+  border-radius: .5rem;
+  display: inline-block;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+/* Modal styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+background-color: #fff; 
+margin: 10% auto; 
+padding: 20px;
+border-radius: 10px;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+max-width: 40%;
+text-align: center;
+}
+
+#okButton {
+padding: 10px 20px;
+margin-top: 5px;
+background-color: #805AD5; 
+color: #fff;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+transition: background-color 0.3s ease;
+}
+
+#okButton:hover {
+background-color: #6B46C1;
+}
+
+#okButtonFailed {
+padding: 10px 20px;
+margin-top: 5px;
+background-color: #e36d6d; 
+color: #fff;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+transition: background-color 0.3s ease;
+}
+
+#okButtonFailed:hover {
+background-color: #DC2626;
+}
+    

@@ -12,5 +12,4 @@ router.get('/login', userController.getLogin);
 
 router.post('/login', userController.postLogin);
 
-router.get('/premiumstatus', userAuth.authenticate, userController.checkPremiumStatus)
 module.exports = router;

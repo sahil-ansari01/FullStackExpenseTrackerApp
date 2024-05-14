@@ -3,7 +3,7 @@ const token = localStorage.getItem('token')
 document.addEventListener('DOMContentLoaded', async function () {
 
   renderExpenses();
-  // await checkPremiumStatus();
+  await checkPremiumStatus();
 
   const expenseForm = document.getElementById('expenseForm');
 
@@ -36,8 +36,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 async function checkPremiumStatus() {
   try {
-      const response = await axios.get('http://localhost:3000/user/premiumstatus', { headers: { "Authorization": token } });
+      const response = await axios.get('http://localhost:3000/premium/premiumstatus', { headers: { "Authorization": token } });
       if (response.data.isPremium) {
+          document.getElementById('showLeaderboard').style.display = 'block';
           replacePremiumButton();
       }
   } catch (err) {
@@ -50,6 +51,7 @@ function replacePremiumButton() {
   const premiumButton = document.getElementById('rzp-button1');
   const premiumText = document.createElement('p');
   premiumText.textContent = "You are a Premium User";
+  premiumText.classList.add('premium-user');
   premiumButton.parentNode.replaceChild(premiumText, premiumButton);
 }
 
@@ -118,7 +120,10 @@ document.getElementById('rzp-button1').addEventListener('click', async function(
             order_id: response.data.order.id, // Use the outer response here
             payment_id: razorpayResponse.razorpay_payment_id, // Use razorpayResponse
           }, { headers: { "Authorization": token }});
-          alert('You are a Premium User now!');
+
+          document.getElementById('successModal').style.display = 'block';
+          document.getElementById('showLeaderboard').style.display = 'block';
+
         } catch (err) {
           console.error(err);
           alert("Failed to update transaction status. Please try again later.");
@@ -132,10 +137,33 @@ document.getElementById('rzp-button1').addEventListener('click', async function(
 
     rzp1.on('payment.failed', function (response){
       console.log(response);
-      alert('Transaction Failed!')
+      document.getElementById('failModal').style.display = 'block';
     });
   } catch (err) {
     console.error(err);
     alert("Failed to initiate premium membership purchase. Please try again later.");
   }
 });
+
+// Event listener for "OK" button in modals
+document.getElementById('okButton').addEventListener('click', function() {
+
+  document.getElementById('successModal').style.display = 'none';
+  checkPremiumStatus();
+});
+
+document.getElementById('okButtonFailed').addEventListener('click', function() {
+  document.getElementById('failModal').style.display = 'none';
+});
+
+document.getElementById('showLeaderboard').addEventListener('click',async function() {
+
+  const response = await axios.get('http://localhost:3000/premium/showLeaderboard', { headers: { "Authorization": token }})
+  
+  renderLeaderboard(response);
+
+})
+
+async function renderLeaderboard(res) {
+  
+}

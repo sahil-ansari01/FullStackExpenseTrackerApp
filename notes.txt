@@ -1,0 +1,10 @@
+Frontend
+1) SHow the leaderboard button - Dom manipulation
+2) When you click on this button a api call should happen
+3) You will get the data in sorted order from backend
+4) DO Dom manipulation and show the data
+Backend
+1) Create a new route -> /premium/showleaderboad
+2) Find all the expense and then group by unique user id
+3) I need the name of the user
+4) Query the User table
