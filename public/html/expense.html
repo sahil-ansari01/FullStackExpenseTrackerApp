@@ -11,8 +11,32 @@
 </head>
 <body class="bg-gray-100">
 
+<!-- Navigation Bar -->
+<nav class="bg-white shadow-md">
+  <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+    <div class="text-xl font-semibold text-gray-800">Expense Tracker</div>
+    <div class="hidden lg:flex space-x-4">
+      <a href="#" class="text-gray-800 hover:text-purple-600">Dashboard</a>
+      <a href="" class="text-gray-800 hover:text-purple-600">Leaderboard</a>
+      <a href="#" class="text-gray-800 hover:text-purple-600">Profile</a>
+    </div>
+    <div class="lg:hidden">
+      <button id="menuButton" class="text-gray-800 hover:text-purple-600 focus:outline-none">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div id="mobileMenu" class="hidden lg:hidden">
+    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-purple-600 hover:text-white">Dashboard</a>
+    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-purple-600 hover:text-white">Leaderboard</a>
+    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-purple-600 hover:text-white">Profile</a>
+  </div>
+</nav>
+
 <!-- Expense Form -->
-<div class="container mx-auto mt-8 px-4 lg:px-0 flex justify-center">
+<div class="container mx-auto mt-1 px-4 lg:px-0 flex justify-center">
   <div class="max-w-lg w-full bg-white p-8 rounded-lg shadow-md">
     <h2 class="text-2xl font-semibold mb-4 text-center text-gray-800">Add Expense</h2>
     <form id="expenseForm" class="space-y-4">
@@ -47,9 +71,7 @@
   </div>
 </div>
 
-<div class="grid grid-cols-2 justify-center gap-1">
-  <!-- Expense Table -->
-  <div class="container mx-auto mt-8 px-4 lg:px-0 flex justify-center">
+<div class="container mx-auto mt-2 px-4 lg:px-0 flex justify-center" id="tablesContainer">
   <div class="max-w-lg w-full bg-white p-8 rounded-lg shadow-md">
     <h2 class="text-2xl font-semibold mb-4 text-center text-gray-800">Expense Table</h2>
     <table class="w-full">
@@ -66,27 +88,22 @@
       </tbody>
     </table>
   </div>
-  </div>
 
-  <!-- Leaderboard Table -->
-  <div class="container mx-auto mt-8 px-4 lg:px-0 flex justify-center" style="display:none;" id="leaderboardTable">
-    <div class="max-w-lg w-full bg-white p-8 rounded-lg shadow-md">
-      <h2 class="text-2xl font-semibold mb-4 text-center text-gray-800">Leaderboard</h2>
-      <table class="w-full">
-        <thead>
-          <tr>
-            <th class="px-4 py-2 text-sm font-semibold text-gray-600">Name</th>
-            <th class="px-4 py-2 text-sm font-semibold text-gray-600">Total Expenses</th>
-          </tr>
-        </thead>
-        <tbody id="leaderboardTableBody">
-          <!-- Leaderboard rows will be dynamically added here -->
-        </tbody>
-      </table>
-    </div>
+  <div class="max-w-lg w-full bg-white p-8 rounded-lg shadow-md" id="leaderboardTable" style="display:none;">
+    <h2 class="text-2xl font-semibold mb-4 text-center text-gray-800">Leaderboard</h2>
+    <table class="w-full">
+      <thead>
+        <tr>
+          <th class="px-4 py-2 text-sm font-semibold text-gray-600">Name</th>
+          <th class="px-4 py-2 text-sm font-semibold text-gray-600">Total Expenses</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboardTableBody">
+        <!-- Leaderboard rows will be dynamically added here -->
+      </tbody>
+    </table>
   </div>
 </div>
-
 
 <!-- Transaction Models -->
 <div id="successModal" class="modal">
@@ -106,6 +123,16 @@
 <!-- JavaScript to handle form submission, add expenses to table, and delete expenses -->
 <script src="../js/expense.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+
+  document.getElementById('menuButton').addEventListener('click', function() {
+    var mobileMenu = document.getElementById('mobileMenu');
+    if (mobileMenu.classList.contains('hidden')) {
+      mobileMenu.classList.remove('hidden');
+    } else {
+      mobileMenu.classList.add('hidden');
+    }
+  });
+</script>
 </body>
 </html>
-

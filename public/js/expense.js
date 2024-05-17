@@ -160,13 +160,20 @@ document.getElementById('okButtonFailed').addEventListener('click', function() {
   document.getElementById('failModal').style.display = 'none';
 });
 
-document.getElementById('showLeaderboard').addEventListener('click',async function() {
+document.getElementById('showLeaderboard').addEventListener('click', async function() {
+  var leaderboard = document.getElementById('leaderboardTable');
+  var tablesContainer = document.getElementById('tablesContainer');
+  
+  if (leaderboard.style.display === 'none' || leaderboard.style.display === '') {
+    leaderboard.style.display = 'block';
+    tablesContainer.classList.add('lg:grid', 'lg:grid-cols-2', 'gap-8');
+  } else {
+    leaderboard.style.display = 'none';
+    tablesContainer.classList.remove('lg:grid', 'lg:grid-cols-2', 'gap-8');
+  }
 
-  document.getElementById('leaderboardTable').style.display = 'block';
   showLeaderboard();
-
-})
-
+});
 
 async function showLeaderboard() {
   try {
@@ -180,7 +187,7 @@ async function showLeaderboard() {
         newRow.dataset.id = userDetails.id; 
         newRow.innerHTML = `
             <td class="text-center">${userDetails.name}</td>
-            <td class="text-center">${userDetails.total_cost}</td>
+            <td class="text-center">$ ${userDetails.total_cost}</td>
         `;
 
         leaderboardTableBody.appendChild(newRow);
