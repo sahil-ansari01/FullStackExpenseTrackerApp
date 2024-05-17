@@ -20,7 +20,10 @@ exports.checkPremiumStatus = async (req, res, next) => {
 
 exports.showLeaderboard = async (req, res, next) => {
     try {
-        const expenses = await Expense.findAll();
+        const expenses = await Expense.findAll({
+            include: [{ model: User, attributes: ['name'] }]
+        })
+        
         res.status(200).json({ expenses: expenses }); 
     } catch (err) {
         console.log(err);

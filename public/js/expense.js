@@ -74,7 +74,7 @@ function renderExpenses() {
           if (expenseData && expenseData.length > 0) {
               expenseData.forEach(expense => {
                   const newRow = document.createElement("tr");
-                  newRow.dataset.id = expense.id; // Set the expense ID as data-id
+                  newRow.dataset.id = expense.id;
                   newRow.innerHTML = `
                       <td class="text-center">${expense.spentAmount}</td>
                       <td class="text-center">${expense.description}</td>
@@ -122,7 +122,7 @@ document.getElementById('rzp-button1').addEventListener('click', async function(
           }, { headers: { "Authorization": token }});
 
           document.getElementById('successModal').style.display = 'block';
-          document.getElementById('showLeaderboard').style.display = 'block';
+          document.getElementById('showLeaderboard').style.display = 'block'; 
 
         } catch (err) {
           console.error(err);
@@ -160,10 +160,33 @@ document.getElementById('showLeaderboard').addEventListener('click',async functi
 
   const response = await axios.get('http://localhost:3000/premium/showLeaderboard', { headers: { "Authorization": token }})
   
+  document.getElementById('leaderboardTable').style.display = 'block';
   renderLeaderboard(response);
 
 })
 
 async function renderLeaderboard(res) {
-  
+
+  const expenses = res.data.expenses;
+  console.log(res.data);
+  const leaderboardTableBody = document.getElementById('leaderboardTableBody');
+
+  leaderboardTableBody.innerHTML = '';
+
+  if (expenses && expenses.length > 0) {
+
+    expenses.sort((a, b) => b.spentAmount - a.spentAmount);
+
+    expenses.forEach(expense => {
+        const newRow = document.createElement("tr");
+        newRow.dataset.name = expense.user.name;
+        newRow.dataset.id = expense.id; 
+        newRow.innerHTML = `
+            <td class="text-center">${expense.user.name}</td>
+            <td class="text-center">${expense.spentAmount}</td>
+        `;
+
+        leaderboardTableBody.appendChild(newRow);
+    });
+  }
 }
