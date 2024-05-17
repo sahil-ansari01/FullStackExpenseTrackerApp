@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   renderExpenses();
   await checkPremiumStatus();
+ 
 
   const expenseForm = document.getElementById('expenseForm');
 
@@ -40,6 +41,7 @@ async function checkPremiumStatus() {
       if (response.data.isPremium) {
           document.getElementById('showLeaderboard').style.display = 'block';
           replacePremiumButton();
+          showLeaderboard();
       }
   } catch (err) {
       console.error(err);
@@ -68,6 +70,7 @@ function fetchExpense() {
 function renderExpenses() {
   fetchExpense()
       .then(expenseData => {
+        showLeaderboard();  
           const expenseTableBody = document.getElementById('expenseTableBody');
           expenseTableBody.innerHTML = '';
 
@@ -100,6 +103,7 @@ document.getElementById("expenseTableBody").addEventListener("click", function (
       axios.delete(`http://localhost:3000/expense/deleteExpense/${expenseId}`, { headers: { "Authorization": token }})
           .then(() => {
               row.remove();
+              showLeaderboard();
           })
           .catch(err => {
               console.error(err);
@@ -158,35 +162,31 @@ document.getElementById('okButtonFailed').addEventListener('click', function() {
 
 document.getElementById('showLeaderboard').addEventListener('click',async function() {
 
-  const response = await axios.get('http://localhost:3000/premium/showLeaderboard', { headers: { "Authorization": token }})
-  
   document.getElementById('leaderboardTable').style.display = 'block';
-  renderLeaderboard(response);
+  showLeaderboard();
 
 })
 
-async function renderLeaderboard(res) {
 
-  const expenses = res.data.expenses;
-  console.log(res.data);
-  const leaderboardTableBody = document.getElementById('leaderboardTableBody');
+async function showLeaderboard() {
+  try {
+    const userLeaderboardArray = await axios.get('http://localhost:3000/premium/showLeaderboard', { headers: { "Authorization": token }})
 
-  leaderboardTableBody.innerHTML = '';
-
-  if (expenses && expenses.length > 0) {
-
-    expenses.sort((a, b) => b.spentAmount - a.spentAmount);
-
-    expenses.forEach(expense => {
+    const userDetails = userLeaderboardArray.data;
+    leaderboardTableBody.innerHTML = '';
+    userDetails.forEach((userDetails) => {
         const newRow = document.createElement("tr");
-        newRow.dataset.name = expense.user.name;
-        newRow.dataset.id = expense.id; 
+        newRow.dataset.name = userDetails.name;
+        newRow.dataset.id = userDetails.id; 
         newRow.innerHTML = `
-            <td class="text-center">${expense.user.name}</td>
-            <td class="text-center">${expense.spentAmount}</td>
+            <td class="text-center">${userDetails.name}</td>
+            <td class="text-center">${userDetails.total_cost}</td>
         `;
 
         leaderboardTableBody.appendChild(newRow);
-    });
+    }); 
+  } catch (err) {
+    console.log(err);
   }
-}
+
+} 
