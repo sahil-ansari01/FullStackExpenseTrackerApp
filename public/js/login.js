@@ -2,6 +2,8 @@ document.getElementById('signupButton').addEventListener('click', function() {
     window.location.href = '/user/signup';
 });
 
+const token = localStorage.getItem('token');
+
 async function login(e) {
     try {
         e.preventDefault();
@@ -34,7 +36,7 @@ async function submitForgotPassword(event) {
         event.preventDefault();
         const email = document.getElementById('forgotEmail').value;
         
-        const res = await axios.post('http://localhost:3000/password/forgetpassword', { email });
+        const res = await axios.post('http://localhost:3000/password/forgetpassword', { email }, { headers: {'Authentication': token }});
         if (res.status === 200) {
             alert('Password reset link sent to your email');
             document.getElementById('forgotPasswordForm').style.display = 'none';
