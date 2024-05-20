@@ -4,6 +4,6 @@
 #modules
 node_modules
 
-#package
+#packages
 package-lock.json
 package.json
