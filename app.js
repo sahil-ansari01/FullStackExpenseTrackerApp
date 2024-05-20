@@ -6,6 +6,7 @@ const sequelize = require('./util/database');
 const Expense = require("./models/expense");
 const User = require("./models/user");
 const Order = require('./models/orders');
+const ForgetPasswordRequest = require('./models/forgetPasswordRequest');
 
 const cors = require('cors');
 
@@ -31,7 +32,7 @@ app.use('/user', userRoutes);
 app.use('/expense', expenseRoutes);
 app.use('/purchase', purchaseRoutes);
 app.use('/premium', premiumRoutes);
-app.use('/password', passwordRoutes);
+app.use('/resetpassword', passwordRoutes);
 
 // Define associations
 User.hasMany(Expense);
@@ -39,6 +40,9 @@ Expense.belongsTo(User);
 
 User.hasMany(Order);
 Order.belongsTo(User);
+
+User.hasMany(ForgetPasswordRequest);
+ForgetPasswordRequest.belongsTo(User);
 
 // Sync database and start server
 sequelize.sync()
