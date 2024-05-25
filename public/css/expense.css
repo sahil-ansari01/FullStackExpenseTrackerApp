@@ -56,6 +56,18 @@ max-width: 40%;
 text-align: center;
 }
 
+.view-type-buttons {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px; 
+  height: 50px;
+}
+
+.view-type-buttons button {
+  margin: 0 5px; 
+}
+
 #okButton {
 padding: 10px 20px;
 margin-top: 5px;
