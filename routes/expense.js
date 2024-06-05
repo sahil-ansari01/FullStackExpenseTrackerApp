@@ -10,4 +10,6 @@ router.post('/postExpense',userAuth.authenticate, expenseController.postExpense)
 
 router.delete('/deleteExpense/:id', userAuth.authenticate, expenseController.deleteExpense);
 
+router.get('/download', userAuth.authenticate, expenseController.downloadExpense);
+
 module.exports = router;

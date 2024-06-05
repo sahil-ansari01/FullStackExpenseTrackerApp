@@ -12,7 +12,7 @@ async function signup(e) {
             password: e.target.password.value
         }
         
-        const response = await axios.post('http://localhost:3000/user/signup', signupDetails)
+        const response = await axios.post('http://localhost:3000/user/signup', signupDetails, {headers: { 'Authorization': token }})
 
         if (response.status === 201) {
             window.location.href = '/user/login';

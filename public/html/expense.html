@@ -7,7 +7,7 @@
   <!-- Tailwind CSS -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="../css/expense.css">\
+  <link rel="stylesheet" href="../css/expense.css">
   <!-- font awesome cdns -->
  <link rel="stylesheet" href=" https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
@@ -67,11 +67,11 @@
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       </div>
       <div>
-        <button id="showLeaderboard" class="w-full mt-2 btn-primary text-white font-semibold rounded-lg px-4 py-2" style="display:none;">Show Leaderboard</button>
+        <button id="showLeaderboard" class="w-full mt-2 btn-primary text-white font-semibold rounded-lg px-4 py-2" style="display:none;">Leaderboard</button>
       </div>
     </div>
   </div>
-  <div class="max-w-lg w-full bg-white p-8 mx-4 shadow-md" id="leaderboardTable" style="display:none;">
+  <div class="max-w-lg w-full bg-white p-8 mx-1 shadow-md" id="leaderboardTable" style="display:none;">
     <h2 class="text-2xl font-semibold mb-4 text-center text-gray-800">Leaderboard</h2>
     <table class="w-full">
       <thead>
@@ -108,10 +108,32 @@
         <!-- Expense rows will be dynamically added here -->
       </tbody>
     </table>
-    <button class="btn-primary text-white font-semibold rounded-lg px-4 py-2 flex items-center justify-end transition-colors duration-300 ease-in-out transform hover:bg-purple-600 focus:outline-none focus:bg-purple-600 mt-2" id="downloadBtn" style="display: none;">
-      <span class="fa-solid fa-download mr-2"></span>
-      Download
-    </button>
+
+    <div class="flex justify-between items-center mt-4">
+      <button onclick="download()" class="btn-primary text-white font-semibold rounded-lg px-4 py-2 flex items-center transition-colors duration-300 ease-in-out transform hover:bg-purple-600 focus:outline-none focus:bg-purple-600" id="downloadBtn" style="display: none;">
+        <span class="fa-solid fa-download mr-2"></span>
+        Download
+      </button>
+      <button id="previousDownloadsBtn" class="btn-primary text-white font-semibold rounded-lg px-4 py-2 flex items-center transition-colors duration-300 ease-in-out transform hover:bg-purple-600 focus:outline-none focus:bg-purple-600">
+        <span class="fa-solid fa-folder-open mr-2"></span>
+        Previous Downloads
+      </button>
+    </div>
+  </div>
+  <!-- Previous Downloads Table -->
+  <div class="max-w-lg w-full bg-white p-8 mx-1 rounded-lg shadow-md" id="previousDownloadsTable" style="display: none;">
+    <h2 class="text-2xl font-semibold mb-4 text-center text-gray-800">Previous Downloads</h2>
+    <table class="w-full">
+      <thead>
+        <tr>
+          <th class="px-4 py-2 text-sm font-semibold text-gray-600">Date</th>
+          <th class="px-4 py-2 text-sm font-semibold text-gray-600">Download Link</th>
+        </tr>
+      </thead>
+      <tbody id="previousDownloadsTableBody">
+        <!-- Previous download rows will be dynamically added here -->
+      </tbody>
+    </table>
   </div>
 </div>
 

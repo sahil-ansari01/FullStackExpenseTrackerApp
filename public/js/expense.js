@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     try {
       await axios.post('http://localhost:3000/expense/postExpense', expenseDetails, { headers: { "Authorization": token }});
       renderExpenses('daily');  // Refresh daily view after adding expense
+      showLeaderboard();
     } catch (err) {
       console.error(err);
     }
@@ -113,6 +114,7 @@ document.getElementById("expenseTableBody").addEventListener("click", function (
       .then(() => {
         row.remove();
         renderExpenses('daily');  // Refresh daily view after deleting expense
+        showLeaderboard();
       })
       .catch(err => {
         console.error(err);
@@ -205,8 +207,22 @@ async function showLeaderboard() {
   } catch (err) {
     console.log(err);
   }
-} 
+}
 
-document.getElementById('downloadBtn').addEventListener('click', async function() {
-
-})  
+async function download() {
+  try {
+    axios.get('http://localhost:3000/expense/download', { headers: { 'Authorization': token }})
+    .then((res) => {
+      if(res.status === 200) {
+        var a = document.createElement('a');
+        a.href = res.data.fileURL;
+        a.download = 'myexpense.csv';
+        a.click();
+      } else {
+        throw new Error(res.data.message);
+      }
+    })
+  } catch (err) {
+    console.log(err);
+  }
+}

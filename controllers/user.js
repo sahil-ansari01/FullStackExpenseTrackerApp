@@ -2,6 +2,7 @@ const path = require('path');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const AWS = require('aws-sdk');
 
 function isStringValidate(string) {
     return string === undefined || string.length === 0;
