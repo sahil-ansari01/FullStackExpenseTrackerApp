@@ -1,5 +1,15 @@
-document.getElementById('loginButton').addEventListener('click', function() {
-    window.location.href = '/user/login';
+document.addEventListener('DOMContentLoaded', function () {
+    const loginButton = document.getElementById('loginButton');
+    if (loginButton) {
+        loginButton.addEventListener('click', function() {
+            window.location.href = '/user/login';
+        });
+    }
+
+    const signupForm = document.getElementById('signupForm');
+    if (signupForm) {
+        signupForm.addEventListener('submit', signup);
+    }
 });
 
 async function signup(e) {
@@ -12,8 +22,9 @@ async function signup(e) {
             password: e.target.password.value
         }
         
-        const response = await axios.post('http://localhost:3000/user/signup', signupDetails, {headers: { 'Authorization': token }})
+        const response = await axios.post('http://localhost:3000/user/signup', signupDetails)
 
+        console.log(response);
         if (response.status === 201) {
             window.location.href = '/user/login';
         } else {

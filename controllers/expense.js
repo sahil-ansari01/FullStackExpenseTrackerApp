@@ -78,17 +78,35 @@ exports.deleteExpense = async (req, res, next) => {
     }
 }
 
-exports.downloadExpense = async (req, res, next) => { 
+exports.downloadExpense = async (req, res, next) => {
     try {
         const userId = req.user.id;
-        const expenses = await UserServices.getExpenses(req)
+        const expenses = await UserServices.getExpenses(req);
         const stringifyExpenses = JSON.stringify(expenses, null, 2);
         const filename = `Expense_${userId}_${new Date().toISOString()}.txt`;
         const fileURL = await S3Services.uploadToS3(stringifyExpenses, filename);
 
-        res.status(200).json({ fileURL, success: true });
+        // Save download details to Downloads model
+        const downloads = await Downloads.create({
+            userId,
+            filename,
+            fileURL,
+        });
+
+        res.status(200).json({ fileURL, success: true, downloads });
     } catch (err) {
         console.log(err);
         res.status(500).json({ success: false, error: err.message });
     }
-}
+};
+
+exports.getDownloads = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        const downloads = await Downloads.findAll({ where: { userId } });
+        res.status(200).json(downloads);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+};

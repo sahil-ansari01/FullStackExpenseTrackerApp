@@ -21,6 +21,7 @@ const purchasepremium = async (req, res) => {
 
             try {
                 await req.user.createOrder({ orderid: order.id, status: 'PENDING' });
+                console.log(order.id);
                 return res.status(201).json({ order, key_id: rzp.key_id });
             } catch (error) {
                 console.error('Error creating user order:', error);

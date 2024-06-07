@@ -52,6 +52,7 @@ async function checkPremiumStatus() {
       document.getElementById('showLeaderboard').style.display = 'block';
       document.getElementById('viewTypeButtons').style.display = 'block';
       document.getElementById('downloadBtn').style.display = 'block';
+      document.getElementById('previousDownloadsBtn').style.display = 'block';
       replacePremiumButton();
       showLeaderboard();
     }
@@ -214,6 +215,8 @@ async function download() {
     axios.get('http://localhost:3000/expense/download', { headers: { 'Authorization': token }})
     .then((res) => {
       if(res.status === 200) {
+        postDownloads();
+        loadPreviousDownloads();
         var a = document.createElement('a');
         a.href = res.data.fileURL;
         a.download = 'myexpense.csv';
@@ -224,5 +227,63 @@ async function download() {
     })
   } catch (err) {
     console.log(err);
+  }
+}
+
+async function postDownloads(fileURL, filename) {
+  try {
+    await axios.post('http://localhost:3000/expense/postDownloads', { filename, fileURL }, { headers: { 'Authorization': token }});
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+document.getElementById('previousDownloadsBtn').addEventListener('click', function() {
+  var previousDownloadsTable = document.getElementById('previousDownloadsTable');
+  loadPreviousDownloads();
+  if (previousDownloadsTable.style.display === 'none') {
+    previousDownloadsTable.style.display = 'block';
+  } else {
+    previousDownloadsTable.style.display = 'none';
+  }
+});
+
+async function loadPreviousDownloads() {
+  try {
+    const response = await axios.get('http://localhost:3000/expense/getDownloads', {headers: { 'Authorization': token }});
+    const previousDownloads = response.data;
+
+    console.log(response.data);
+    const tableBody = document.getElementById('previousDownloadsTableBody');
+    tableBody.innerHTML = ''; // Clear existing rows
+
+    previousDownloads.forEach(download => {
+      const row = document.createElement('tr');
+      row.classList.add('text-center');
+
+      const dateCell = document.createElement('td');
+      dateCell.classList.add('px-4', 'py-2', 'text-gray-600');
+      dateCell.textContent = new Date(download.createdAt).toLocaleString();
+
+      const fileNameCell = document.createElement('td');
+      fileNameCell.classList.add('px-4', 'py-2', 'text-gray-600');
+      fileNameCell.textContent = download.filename;
+
+      const linkCell = document.createElement('td');
+      linkCell.classList.add('px-4', 'py-2', 'text-gray-600');
+      const link = document.createElement('a');
+      link.href = download.fileURL;
+      link.textContent = 'Download';
+      link.classList.add('text-purple-600', 'hover:underline');
+      linkCell.appendChild(link);
+
+      row.appendChild(dateCell);
+      row.appendChild(fileNameCell);
+      row.appendChild(linkCell);
+
+      tableBody.appendChild(row);
+    });
+  } catch (err) {
+    console.error(err);
   }
 }
