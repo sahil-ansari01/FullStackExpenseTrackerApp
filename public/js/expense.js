@@ -70,6 +70,7 @@ function replacePremiumButton() {
   premiumButton.parentNode.replaceChild(premiumText, premiumButton);
 }
 
+
 function fetchExpense(viewType) {
   return axios.get(`http://localhost:3000/expense/getExpense?view=${viewType}`, { headers: { "Authorization": token }}) 
     .then(res => {
@@ -215,7 +216,7 @@ async function download() {
     axios.get('http://localhost:3000/expense/download', { headers: { 'Authorization': token }})
     .then((res) => {
       if(res.status === 200) {
-        postDownloads();
+        // postDownloads();
         loadPreviousDownloads();
         var a = document.createElement('a');
         a.href = res.data.fileURL;
@@ -227,14 +228,6 @@ async function download() {
     })
   } catch (err) {
     console.log(err);
-  }
-}
-
-async function postDownloads(fileURL, filename) {
-  try {
-    await axios.post('http://localhost:3000/expense/postDownloads', { filename, fileURL }, { headers: { 'Authorization': token }});
-  } catch (err) {
-    console.error(err);
   }
 }
 
@@ -252,13 +245,12 @@ async function loadPreviousDownloads() {
   try {
     const response = await axios.get('http://localhost:3000/expense/getDownloads', {headers: { 'Authorization': token }});
     const previousDownloads = response.data;
-
-    console.log(response.data);
+     
     const tableBody = document.getElementById('previousDownloadsTableBody');
     tableBody.innerHTML = ''; // Clear existing rows
 
     previousDownloads.forEach(download => {
-      const row = document.createElement('tr');
+      const row = document.createElement('tr'); 
       row.classList.add('text-center');
 
       const dateCell = document.createElement('td');
