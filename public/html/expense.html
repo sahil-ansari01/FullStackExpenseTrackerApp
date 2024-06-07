@@ -68,7 +68,7 @@
     <div class="flex space-x-4 mt-4">
       <button id="rzp-button1" class="flex-1 btn-primary text-white font-semibold rounded-lg px-4 py-2 transition-colors duration-300 ease-in-out transform hover:bg-purple-600 focus:outline-none focus:bg-purple-600">Buy Premium</button>
       <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-      <button id="showLeaderboard" class="flex-1 btn-primary text-white font-semibold rounded-lg px-4 py-2 transition-colors duration-300 ease-in-out transform hover:bg-purple-600 focus:outline-none focus:bg-purple-600" style="display:none;">Leaderboard</button>
+      <button id="showLeaderboardBtn" class="flex-1 btn-primary text-white font-semibold rounded-lg px-4 py-2 transition-colors duration-300 ease-in-out transform hover:bg-purple-600 focus:outline-none focus:bg-purple-600" style="display:none;">Leaderboard</button>
     </div>
   </div>
   <div class="max-w-2xl w-full bg-white p-6 mx-1 rounded-lg shadow-md" id="leaderboardTable" style="display:none;">
@@ -84,16 +84,21 @@
         <!-- Leaderboard rows will be dynamically added here -->
       </tbody>
     </table>
+    <div class="flex justify-center " id="leaderboardPagination">
+      <button id="leaderboardPrevPage" class="px-4 py-2 rounded-l"><span class="fa fa-arrow-circle-left mr-2" aria-hidden="true"></span></button>
+      <span id="leaderboardPageNumber" class="px-4 py-2 bg-gray-200">1</span>
+      <button id="leaderboardNextPage" class="px-4 py-2 rounded-r"><span class="fa fa-arrow-circle-right mr-2" aria-hidden="true"></span></button>
+    </div>
   </div>
 </div>
 
-<div class="container mx-auto mt-2 px-4 lg:px-0 flex justify-center">
+<div class="container mx-auto mt-1 px-4 lg:px-0 flex justify-center">
   <div class="max-w-2xl w-full bg-white p-6 rounded-lg shadow-md">
-  <div class="view-type-buttons flex justify-center space-x-4 mb-4" id="viewTypeButtons">
+    <!-- <div class="view-type-buttons flex justify-center space-x-4 mb-4" id="viewTypeButtons">
       <button id="dailyView" class="btn-primary text-white font-semibold rounded-lg px-4 py-2 transition-colors duration-300 ease-in-out transform hover:bg-purple-600 focus:outline-none focus:bg-purple-600">Daily</button>
       <button id="weeklyView" class="btn-primary text-white font-semibold rounded-lg px-4 py-2 transition-colors duration-300 ease-in-out transform hover:bg-purple-600 focus:outline-none focus:bg-purple-600">Weekly</button>
       <button id="monthlyView" class="btn-primary text-white font-semibold rounded-lg px-4 py-2 transition-colors duration-300 ease-in-out transform hover:bg-purple-600 focus:outline-none focus:bg-purple-600">Monthly</button>
-    </div>    
+    </div>     -->
     <h2 class="text-2xl font-semibold mb-4 text-center text-gray-800">Expense Table</h2>
     <table class="w-full">
       <thead>
@@ -109,7 +114,13 @@
       </tbody>
     </table>
 
-    <div class="flex justify-between items-center mt-4">
+    <div class="flex justify-center" id="expenseTablePagination">
+      <button id="expenseTablePrevPage" class="px-4 py-2 rounded-l"><span class="fa fa-arrow-circle-left mr-2" aria-hidden="true"></span></button>
+      <span id="expenseTablePageNumber" class="px-4 py-2 bg-gray-200">1</span>
+      <button id="expenseTableNextPage" class="px-4 py-2 rounded-r"><span class="fa fa-arrow-circle-right mr-2" aria-hidden="true"></span></button>
+    </div>
+
+    <div class="flex justify-between items-center mt-1">
       <button onclick="download()" class="btn-primary text-white font-semibold rounded-lg px-4 py-2 flex items-center transition-colors duration-300 ease-in-out transform hover:bg-purple-600 focus:outline-none focus:bg-purple-600" id="downloadBtn" style="display: none;">
         <span class="fa-solid fa-download mr-2"></span>
         Download
@@ -127,7 +138,6 @@
       <thead>
         <tr>
           <th class="px-4 py-2 text-sm font-semibold text-gray-600">Date</th>
-          <th class="px-4 py-2 text-sm font-semibold text-gray-600">Filename</th>
           <th class="px-4 py-2 text-sm font-semibold text-gray-600">Download Link</th>
         </tr>
       </thead>
@@ -135,6 +145,11 @@
         <!-- Previous download rows will be dynamically added here -->
       </tbody>
     </table>
+    <div class="flex justify-center mt-4" id="previousDownloadsPagination">
+      <button id="previousDownloadsPrevPage" class="px-4 py-2 rounded-l"><span class="fa fa-arrow-circle-left mr-2" aria-hidden="true"></span></button>
+      <span id="previousDownloadsPageNumber" class="px-4 py-2 bg-gray-200">1</span>
+      <button id="previousDownloadsNextPage" class="px-4 py-2 rounded-r"><span class="fa fa-arrow-circle-right mr-2" aria-hidden="true"></span></button>
+    </div>    
   </div>
 </div>
 

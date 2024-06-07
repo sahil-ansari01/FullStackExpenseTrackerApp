@@ -22,6 +22,10 @@ exports.checkPremiumStatus = async (req, res, next) => {
 
 exports.showLeaderboard = async (req, res, next) => {
     try {
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 3;
+        const offset = (page - 1) * pageSize;
+
         const leaderboardofusers = await User.findAll({
             attributes: ['id', 'name',[sequelize.fn('sum', sequelize.col('expenses.spentAmount')), 'total_cost']],
             include: [
@@ -32,8 +36,10 @@ exports.showLeaderboard = async (req, res, next) => {
             ],
             group: ['user.id'],
             order: [['total_cost', 'DESC']]
-        })
-        res.status(200).json(leaderboardofusers ); 
+        });
+
+        const paginatedData = leaderboardofusers.slice(offset, offset + pageSize);
+        res.status(200).json(paginatedData ); 
     } catch (err) {
         console.log(err);
         res.status(500).json({ error: "Internal server error" });

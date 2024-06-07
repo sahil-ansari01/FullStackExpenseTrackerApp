@@ -9,8 +9,14 @@ const S3Services = require('../services/S3services');
 
 exports.getExpense = async (req, res, next) => {
     try {      
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 4;
+        const offset = (page - 1) * pageSize;
+
         const expenses = await Expense.findAll({where: { userId: req.user.id}});
-        res.status(200).json({ expenses: expenses }); 
+        const paginatedData = expenses.slice(offset, offset + pageSize);
+
+        res.status(200).json({ expenses: paginatedData }); 
     } catch (err) {
         res.status(500).json({ error: err.message });  
         console.log(err); 
@@ -102,9 +108,14 @@ exports.downloadExpense = async (req, res, next) => {
 
 exports.getDownloads = async (req, res, next) => {
     try {
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 5;
+        const offset = (page - 1) * pageSize;
+
         const userId = req.user.id;
         const downloads = await Downloads.findAll({ where: { userId } });
-        res.status(200).json(downloads);
+        const paginatedData = downloads.slice(offset, offset + pageSize);
+        res.status(200).json(paginatedData);
     } catch (err) {
         console.log(err);
         res.status(500).json({ success: false, error: err.message });

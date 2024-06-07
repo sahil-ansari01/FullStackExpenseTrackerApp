@@ -1,7 +1,7 @@
 const token = localStorage.getItem('token');
 
 document.addEventListener('DOMContentLoaded', async function () {
-  renderExpenses('daily');  // Default view
+  renderExpenses();  // Default view
   await checkPremiumStatus();
 
   const expenseForm = document.getElementById('expenseForm');
@@ -32,25 +32,25 @@ document.addEventListener('DOMContentLoaded', async function () {
     document.getElementById('category').value = "Food";
   });
 
-  document.getElementById('dailyView').addEventListener('click', function() {
-    renderExpenses('daily');
-  });
+  // document.getElementById('dailyView').addEventListener('click', function() {
+  //   renderExpenses('daily');
+  // });
 
-  document.getElementById('weeklyView').addEventListener('click', function() {
-    renderExpenses('weekly');
-  });
+  // document.getElementById('weeklyView').addEventListener('click', function() {
+  //   renderExpenses('weekly');
+  // });
 
-  document.getElementById('monthlyView').addEventListener('click', function() {
-    renderExpenses('monthly');
-  });
+  // document.getElementById('monthlyView').addEventListener('click', function() {
+  //   renderExpenses('monthly');
+  // });
 });
 
 async function checkPremiumStatus() {
   try {
     const response = await axios.get('http://localhost:3000/premium/premiumstatus', { headers: { "Authorization": token } });
     if (response.data.isPremium) {
-      document.getElementById('showLeaderboard').style.display = 'block';
-      document.getElementById('viewTypeButtons').style.display = 'block';
+      document.getElementById('showLeaderboardBtn').style.display = 'block';
+      // document.getElementById('viewTypeButtons').style.display = 'block';
       document.getElementById('downloadBtn').style.display = 'block';
       document.getElementById('previousDownloadsBtn').style.display = 'block';
       replacePremiumButton();
@@ -70,9 +70,29 @@ function replacePremiumButton() {
   premiumButton.parentNode.replaceChild(premiumText, premiumButton);
 }
 
+// Expense Table Pagination Logics
+let expenseTablePage = 1;
+const expenseTablePageSize = 4;
+const expenseTablePrevPage = document.getElementById('expenseTablePrevPage');
+const expenseTableNextPage = document.getElementById('expenseTableNextPage');
+const expenseTablePageNumber = document.getElementById('expenseTablePageNumber');
 
-function fetchExpense(viewType) {
-  return axios.get(`http://localhost:3000/expense/getExpense?view=${viewType}`, { headers: { "Authorization": token }}) 
+expenseTablePrevPage.addEventListener('click', async function() {
+  if (expenseTablePage > 1) {
+    expenseTablePage--;
+    renderExpenses();
+  } else {
+    
+  }
+});
+
+expenseTableNextPage.addEventListener('click', async function() {
+  expenseTablePage++;
+  renderExpenses();
+})
+
+function fetchExpense() {
+  return axios.get(`http://localhost:3000/expense/getExpense?page=${expenseTablePage}&pageSize=${expenseTablePageSize}`, { headers: { "Authorization": token }}) 
     .then(res => {
       return res.data.expenses;
     })
@@ -81,8 +101,8 @@ function fetchExpense(viewType) {
     });
 }
 
-function renderExpenses(viewType) {
-  fetchExpense(viewType)
+function renderExpenses() {
+  fetchExpense()
     .then(expenseData => {
       const expenseTableBody = document.getElementById('expenseTableBody');
       expenseTableBody.innerHTML = '';
@@ -100,6 +120,7 @@ function renderExpenses(viewType) {
 
           expenseTableBody.appendChild(newRow);
         });
+        expenseTablePageNumber.textContent = expenseTablePage;
       }
     })
     .catch(err => {
@@ -172,7 +193,10 @@ document.getElementById('okButtonFailed').addEventListener('click', function() {
   document.getElementById('failModal').style.display = 'none';
 });
 
-document.getElementById('showLeaderboard').addEventListener('click', async function() {
+// Leaderboard code 
+const showLeaderboardBtn = document.getElementById('showLeaderboardBtn');
+
+showLeaderboardBtn.addEventListener('click', async function() {
   var leaderboard = document.getElementById('leaderboardTable');
   var tablesContainer = document.getElementById('tabsContainer');
   
@@ -187,9 +211,29 @@ document.getElementById('showLeaderboard').addEventListener('click', async funct
   showLeaderboard();
 });
 
+
+// Leaderboard Pagination Logics
+let leaderboardPage = 1;
+const leaderboardPageSize = 4;
+const leaderboardPrevPage = document.getElementById('leaderboardPrevPage');
+const leaderboardNextPage = document.getElementById('leaderboardNextPage');
+const leaderboardPageNumber = document.getElementById('leaderboardPageNumber');
+
+leaderboardPrevPage.addEventListener('click', async function() {
+  if (leaderboardPage > 1) {
+    leaderboardPage--;
+    showLeaderboard();
+  }
+});
+
+leaderboardNextPage.addEventListener('click', async function() {
+  leaderboardPage++;
+  showLeaderboard();
+})
+
 async function showLeaderboard() {
   try {
-    const userLeaderboardArray = await axios.get('http://localhost:3000/premium/showLeaderboard', { headers: { "Authorization": token }});
+    const userLeaderboardArray = await axios.get(`http://localhost:3000/premium/showLeaderboard?page=${leaderboardPage}&pageSize=${leaderboardPageSize}`, { headers: { "Authorization": token }});
 
     const userDetails = userLeaderboardArray.data;
     const leaderboardTableBody = document.getElementById('leaderboardTableBody');
@@ -206,6 +250,7 @@ async function showLeaderboard() {
 
       leaderboardTableBody.appendChild(newRow);
     }); 
+    leaderboardPageNumber.textContent = leaderboardPage;
   } catch (err) {
     console.log(err);
   }
@@ -231,7 +276,27 @@ async function download() {
   }
 }
 
-document.getElementById('previousDownloadsBtn').addEventListener('click', function() {
+// Previous Downloads
+let previousDownloadsPage = 1;
+const previousDownloadsSize = 5;
+const previousDownloadsPrevPage = document.getElementById('previousDownloadsPrevPage');
+const previousDownloadsNextPage = document.getElementById('previousDownloadsNextPage');
+const previousDownloadsPageNumber = document.getElementById('previousDownloadsPageNumber');
+const previousDownloadsBtn = document.getElementById('previousDownloadsBtn');
+
+previousDownloadsPrevPage.addEventListener('click', async function() {
+  if (previousDownloadsPage > 1) {
+    previousDownloadsPage--;
+    loadPreviousDownloads();
+  }
+});
+
+previousDownloadsNextPage.addEventListener('click', async function() {
+  previousDownloadsPage++;
+  loadPreviousDownloads();
+});
+
+previousDownloadsBtn.addEventListener('click', function() {
   var previousDownloadsTable = document.getElementById('previousDownloadsTable');
   loadPreviousDownloads();
   if (previousDownloadsTable.style.display === 'none') {
@@ -243,23 +308,19 @@ document.getElementById('previousDownloadsBtn').addEventListener('click', functi
 
 async function loadPreviousDownloads() {
   try {
-    const response = await axios.get('http://localhost:3000/expense/getDownloads', {headers: { 'Authorization': token }});
+    const response = await axios.get(`http://localhost:3000/expense/getDownloads?page=${previousDownloadsPage}&pageSize=${previousDownloadsSize}`, { headers: { 'Authorization': token } });
     const previousDownloads = response.data;
-     
+    console.log(previousDownloads);
     const tableBody = document.getElementById('previousDownloadsTableBody');
     tableBody.innerHTML = ''; // Clear existing rows
 
     previousDownloads.forEach(download => {
-      const row = document.createElement('tr'); 
+      const row = document.createElement('tr');
       row.classList.add('text-center');
 
       const dateCell = document.createElement('td');
       dateCell.classList.add('px-4', 'py-2', 'text-gray-600');
       dateCell.textContent = new Date(download.createdAt).toLocaleString();
-
-      const fileNameCell = document.createElement('td');
-      fileNameCell.classList.add('px-4', 'py-2', 'text-gray-600');
-      fileNameCell.textContent = download.filename;
 
       const linkCell = document.createElement('td');
       linkCell.classList.add('px-4', 'py-2', 'text-gray-600');
@@ -270,11 +331,11 @@ async function loadPreviousDownloads() {
       linkCell.appendChild(link);
 
       row.appendChild(dateCell);
-      row.appendChild(fileNameCell);
       row.appendChild(linkCell);
 
       tableBody.appendChild(row);
     });
+    previousDownloadsPageNumber.textContent = previousDownloadsPage;
   } catch (err) {
     console.error(err);
   }
