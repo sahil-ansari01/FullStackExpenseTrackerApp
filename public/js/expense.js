@@ -53,6 +53,8 @@ async function checkPremiumStatus() {
       // document.getElementById('viewTypeButtons').style.display = 'block';
       document.getElementById('downloadBtn').style.display = 'block';
       document.getElementById('previousDownloadsBtn').style.display = 'block';
+      document.getElementById('leaderboardNav').style.display = 'block';
+
       replacePremiumButton();
       showLeaderboard();
     }
@@ -202,10 +204,8 @@ showLeaderboardBtn.addEventListener('click', async function() {
   
   if (leaderboard.style.display === 'none' || leaderboard.style.display === '') {
     leaderboard.style.display = 'block';
-    tablesContainer.classList.add('lg:grid', 'lg:grid-cols-2', 'gap-8');
   } else {
     leaderboard.style.display = 'none';
-    tablesContainer.classList.remove('lg:grid', 'lg:grid-cols-2', 'gap-8');
   }
 
   showLeaderboard();
@@ -261,7 +261,6 @@ async function download() {
     axios.get('http://localhost:3000/expense/download', { headers: { 'Authorization': token }})
     .then((res) => {
       if(res.status === 200) {
-        // postDownloads();
         loadPreviousDownloads();
         var a = document.createElement('a');
         a.href = res.data.fileURL;
@@ -310,7 +309,6 @@ async function loadPreviousDownloads() {
   try {
     const response = await axios.get(`http://localhost:3000/expense/getDownloads?page=${previousDownloadsPage}&pageSize=${previousDownloadsSize}`, { headers: { 'Authorization': token } });
     const previousDownloads = response.data;
-    console.log(previousDownloads);
     const tableBody = document.getElementById('previousDownloadsTableBody');
     tableBody.innerHTML = ''; // Clear existing rows
 
