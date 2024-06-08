@@ -1,67 +1,58 @@
 const token = localStorage.getItem('token');
 
 document.addEventListener('DOMContentLoaded', async function () {
-  renderExpenses();  // Default view
+  await renderExpenses();  // Default view
   await checkPremiumStatus();
 
   const expenseForm = document.getElementById('expenseForm');
-
-  expenseForm.addEventListener('submit', async function(event) {
-    event.preventDefault();
-
-    const spentAmount = document.getElementById('spentAmount').value;
-    const description = document.getElementById('description').value;
-    const category = document.getElementById('category').value;
-
-    const expenseDetails = {
-      spentAmount: spentAmount,
-      description: description,
-      category: category
-    };
-
-    try {
-      await axios.post('http://localhost:3000/expense/postExpense', expenseDetails, { headers: { "Authorization": token }});
-      renderExpenses('daily');  // Refresh daily view after adding expense
-      showLeaderboard();
-    } catch (err) {
-      console.error(err);
-    }
-
-    document.getElementById('spentAmount').value = "";
-    document.getElementById('description').value = "";
-    document.getElementById('category').value = "Food";
-  });
-
-  // document.getElementById('dailyView').addEventListener('click', function() {
-  //   renderExpenses('daily');
-  // });
-
-  // document.getElementById('weeklyView').addEventListener('click', function() {
-  //   renderExpenses('weekly');
-  // });
-
-  // document.getElementById('monthlyView').addEventListener('click', function() {
-  //   renderExpenses('monthly');
-  // });
+  expenseForm.addEventListener('submit', handleExpenseFormSubmit);
 });
+
+async function handleExpenseFormSubmit(event) {
+  event.preventDefault();
+
+  const spentAmount = document.getElementById('spentAmount').value;
+  const description = document.getElementById('description').value;
+  const category = document.getElementById('category').value;
+
+  const expenseDetails = { spentAmount, description, category };
+
+  try {
+    await axios.post('http://localhost:3000/expense/postExpense', expenseDetails, { headers: { "Authorization": token } });
+    await renderExpenses();  // Refresh view after adding expense
+    await showLeaderboard();
+  } catch (err) {
+    console.error(err);
+  }
+
+  resetFormFields();
+}
+
+function resetFormFields() {
+  document.getElementById('spentAmount').value = "";
+  document.getElementById('description').value = "";
+  document.getElementById('category').value = "Food";
+}
 
 async function checkPremiumStatus() {
   try {
     const response = await axios.get('http://localhost:3000/premium/premiumstatus', { headers: { "Authorization": token } });
     if (response.data.isPremium) {
-      document.getElementById('showLeaderboardBtn').style.display = 'block';
-      // document.getElementById('viewTypeButtons').style.display = 'block';
-      document.getElementById('downloadBtn').style.display = 'block';
-      document.getElementById('previousDownloadsBtn').style.display = 'block';
-      document.getElementById('leaderboardNav').style.display = 'block';
-
+      showPremiumFeatures();
       replacePremiumButton();
-      showLeaderboard();
+      await showLeaderboard();
     }
   } catch (err) {
     console.error(err);
     alert("Failed to check premium status. Please try again later.");
   }
+}
+
+function showPremiumFeatures() {
+  document.getElementById('showLeaderboardBtn').style.display = 'block';
+  document.getElementById('downloadBtn').style.display = 'block';
+  document.getElementById('previousDownloadsBtn').style.display = 'block';
+  document.getElementById('leaderboardNav').style.display = 'block';
 }
 
 function replacePremiumButton() {
@@ -72,269 +63,250 @@ function replacePremiumButton() {
   premiumButton.parentNode.replaceChild(premiumText, premiumButton);
 }
 
-// Expense Table Pagination Logics
 let expenseTablePage = 1;
 const expenseTablePageSize = 4;
-const expenseTablePrevPage = document.getElementById('expenseTablePrevPage');
-const expenseTableNextPage = document.getElementById('expenseTableNextPage');
-const expenseTablePageNumber = document.getElementById('expenseTablePageNumber');
 
-expenseTablePrevPage.addEventListener('click', async function() {
+document.getElementById('expenseTablePrevPage').addEventListener('click', async function () {
   if (expenseTablePage > 1) {
     expenseTablePage--;
-    renderExpenses();
-  } else {
-    
+    await renderExpenses();
   }
 });
 
-expenseTableNextPage.addEventListener('click', async function() {
+document.getElementById('expenseTableNextPage').addEventListener('click', async function () {
   expenseTablePage++;
-  renderExpenses();
-})
+  await renderExpenses();
+});
 
-function fetchExpense() {
-  return axios.get(`http://localhost:3000/expense/getExpense?page=${expenseTablePage}&pageSize=${expenseTablePageSize}`, { headers: { "Authorization": token }}) 
-    .then(res => {
-      return res.data.expenses;
-    })
-    .catch(err => {
-      console.error(err);
-    });
+async function fetchExpense() {
+  try {
+    const response = await axios.get(`http://localhost:3000/expense/getExpense?page=${expenseTablePage}&pageSize=${expenseTablePageSize}`, { headers: { "Authorization": token } });
+    return response.data.expenses;
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
 }
 
-function renderExpenses() {
-  fetchExpense()
-    .then(expenseData => {
-      const expenseTableBody = document.getElementById('expenseTableBody');
-      expenseTableBody.innerHTML = '';
+async function renderExpenses() {
+  const expenseData = await fetchExpense();
+  const expenseTableBody = document.getElementById('expenseTableBody');
+  expenseTableBody.innerHTML = '';
 
-      if (expenseData && expenseData.length > 0) {
-        expenseData.forEach(expense => {
-          const newRow = document.createElement("tr");
-          newRow.dataset.id = expense.id;
-          newRow.innerHTML = `
-            <td class="text-center">${expense.spentAmount}</td>
-            <td class="text-center">${expense.description}</td>
-            <td class="text-center">${expense.category}</td>
-            <td class="text-center"><button class="btn btn-danger delete-btn">Delete</button></td>
-          `;
-
-          expenseTableBody.appendChild(newRow);
-        });
-        expenseTablePageNumber.textContent = expenseTablePage;
-      }
-    })
-    .catch(err => {
-      console.error(err);
+  if (expenseData.length > 0) {
+    expenseData.forEach(expense => {
+      const newRow = createExpenseRow(expense);
+      expenseTableBody.appendChild(newRow);
     });
+    document.getElementById('expenseTablePageNumber').textContent = expenseTablePage;
+  }
 }
 
-// Add event listener to handle delete buttons
-document.getElementById("expenseTableBody").addEventListener("click", function (event) {
+function createExpenseRow(expense) {
+  const newRow = document.createElement("tr");
+  newRow.dataset.id = expense.id;
+  newRow.innerHTML = `
+    <td class="text-center">${expense.spentAmount}</td>
+    <td class="text-center">${expense.description}</td>
+    <td class="text-center">${expense.category}</td>
+    <td class="text-center"><button class="btn btn-danger delete-btn">Delete</button></td>
+  `;
+  return newRow;
+}
+
+document.getElementById("expenseTableBody").addEventListener("click", async function (event) {
   if (event.target.classList.contains("delete-btn")) {
     const row = event.target.closest("tr");
     const expenseId = row.dataset.id;
-    axios.delete(`http://localhost:3000/expense/deleteExpense/${expenseId}`, { headers: { "Authorization": token }})
-      .then(() => {
-        row.remove();
-        renderExpenses('daily');  // Refresh daily view after deleting expense
-        showLeaderboard();
-      })
-      .catch(err => {
-        console.error(err);
-      });
+    await deleteExpense(expenseId);
+    row.remove();
+    await renderExpenses();
+    await showLeaderboard();
   }
 });
 
-document.getElementById('rzp-button1').addEventListener('click', async function(e) {
+async function deleteExpense(expenseId) {
   try {
-    const response = await axios.get('http://localhost:3000/purchase/premiummembership', { headers: { "Authorization": token }});
+    await axios.delete(`http://localhost:3000/expense/deleteExpense/${expenseId}`, { headers: { "Authorization": token } });
+  } catch (err) {
+    console.error(err);
+  }
+}
 
-    const options = {
-      "key": response.data.key_id,
-      "order_id": response.data.order.id,
-      "handler": async function (razorpayResponse) {
-        try {
-          await axios.post('http://localhost:3000/purchase/updatetransactionstatus', {
-            order_id: response.data.order.id,
-            payment_id: razorpayResponse.razorpay_payment_id,
-          }, { headers: { "Authorization": token }});
+document.getElementById('rzp-button1').addEventListener('click', handlePremiumPurchase);
 
-          document.getElementById('successModal').style.display = 'block';
-          document.getElementById('showLeaderboard').style.display = 'block'; 
-
-        } catch (err) {
-          console.error(err);
-          alert("Failed to update transaction status. Please try again later.");
-        }
-      },
-    };
-
+async function handlePremiumPurchase(e) {
+  e.preventDefault();
+  try {
+    const response = await axios.get('http://localhost:3000/purchase/premiummembership', { headers: { "Authorization": token } });
+    const options = getRazorpayOptions(response.data);
     const rzp1 = new Razorpay(options);
     rzp1.open();
-    e.preventDefault();
-
-    rzp1.on('payment.failed', function (response){
-      console.log(response);
-      document.getElementById('failModal').style.display = 'block';
-    });
+    rzp1.on('payment.failed', handlePaymentFailure);
   } catch (err) {
     console.error(err);
     alert("Failed to initiate premium membership purchase. Please try again later.");
   }
-});
+}
 
-// Event listener for "OK" button in modals
-document.getElementById('okButton').addEventListener('click', function() {
+function getRazorpayOptions(data) {
+  return {
+    key: data.key_id,
+    order_id: data.order.id,
+    handler: async function (razorpayResponse) {
+      try {
+        await axios.post('http://localhost:3000/purchase/updatetransactionstatus', {
+          order_id: data.order.id,
+          payment_id: razorpayResponse.razorpay_payment_id,
+        }, { headers: { "Authorization": token } });
+
+        document.getElementById('successModal').style.display = 'block';
+        document.getElementById('showLeaderboard').style.display = 'block';
+
+      } catch (err) {
+        console.error(err);
+        alert("Failed to update transaction status. Please try again later.");
+      }
+    },
+  };
+}
+
+function handlePaymentFailure(response) {
+  console.log(response);
+  document.getElementById('failModal').style.display = 'block';
+}
+
+document.getElementById('okButton').addEventListener('click', function () {
   document.getElementById('successModal').style.display = 'none';
   checkPremiumStatus();
 });
 
-document.getElementById('okButtonFailed').addEventListener('click', function() {
+document.getElementById('okButtonFailed').addEventListener('click', function () {
   document.getElementById('failModal').style.display = 'none';
 });
 
-// Leaderboard code 
-const showLeaderboardBtn = document.getElementById('showLeaderboardBtn');
+document.getElementById('showLeaderboardBtn').addEventListener('click', toggleLeaderboardVisibility);
 
-showLeaderboardBtn.addEventListener('click', async function() {
-  var leaderboard = document.getElementById('leaderboardTable');
-  var tablesContainer = document.getElementById('tabsContainer');
-  
-  if (leaderboard.style.display === 'none' || leaderboard.style.display === '') {
-    leaderboard.style.display = 'block';
-  } else {
-    leaderboard.style.display = 'none';
-  }
+async function toggleLeaderboardVisibility() {
+  const leaderboard = document.getElementById('leaderboardTable');
+  leaderboard.style.display = leaderboard.style.display === 'none' || leaderboard.style.display === '' ? 'block' : 'none';
+  await showLeaderboard();
+}
 
-  showLeaderboard();
-});
-
-
-// Leaderboard Pagination Logics
 let leaderboardPage = 1;
 const leaderboardPageSize = 4;
-const leaderboardPrevPage = document.getElementById('leaderboardPrevPage');
-const leaderboardNextPage = document.getElementById('leaderboardNextPage');
-const leaderboardPageNumber = document.getElementById('leaderboardPageNumber');
 
-leaderboardPrevPage.addEventListener('click', async function() {
+document.getElementById('leaderboardPrevPage').addEventListener('click', async function () {
   if (leaderboardPage > 1) {
     leaderboardPage--;
-    showLeaderboard();
+    await showLeaderboard();
   }
 });
 
-leaderboardNextPage.addEventListener('click', async function() {
+document.getElementById('leaderboardNextPage').addEventListener('click', async function () {
   leaderboardPage++;
-  showLeaderboard();
-})
+  await showLeaderboard();
+});
 
 async function showLeaderboard() {
   try {
-    const userLeaderboardArray = await axios.get(`http://localhost:3000/premium/showLeaderboard?page=${leaderboardPage}&pageSize=${leaderboardPageSize}`, { headers: { "Authorization": token }});
-
-    const userDetails = userLeaderboardArray.data;
-    const leaderboardTableBody = document.getElementById('leaderboardTableBody');
-    leaderboardTableBody.innerHTML = '';
-
-    userDetails.forEach(userDetails => {
-      const newRow = document.createElement("tr");
-      newRow.dataset.name = userDetails.name;
-      newRow.dataset.id = userDetails.id;
-      newRow.innerHTML = `
-        <td class="text-center">${userDetails.name}</td>
-        <td class="text-center">$ ${userDetails.total_cost}</td>
-      `;
-
-      leaderboardTableBody.appendChild(newRow);
-    }); 
-    leaderboardPageNumber.textContent = leaderboardPage;
+    const response = await axios.get(`http://localhost:3000/premium/showLeaderboard?page=${leaderboardPage}&pageSize=${leaderboardPageSize}`, { headers: { "Authorization": token } });
+    populateLeaderboardTable(response.data);
+    document.getElementById('leaderboardPageNumber').textContent = leaderboardPage;
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
+}
+
+function populateLeaderboardTable(userDetails) {
+  const leaderboardTableBody = document.getElementById('leaderboardTableBody');
+  leaderboardTableBody.innerHTML = '';
+  userDetails.forEach(userDetail => {
+    const newRow = document.createElement("tr");
+    newRow.dataset.name = userDetail.name;
+    newRow.dataset.id = userDetail.id;
+    newRow.innerHTML = `
+      <td class="text-center">${userDetail.name}</td>
+      <td class="text-center">$ ${userDetail.total_cost}</td>
+    `;
+    leaderboardTableBody.appendChild(newRow);
+  });
 }
 
 async function download() {
   try {
-    axios.get('http://localhost:3000/expense/download', { headers: { 'Authorization': token }})
-    .then((res) => {
-      if(res.status === 200) {
-        loadPreviousDownloads();
-        var a = document.createElement('a');
-        a.href = res.data.fileURL;
-        a.download = 'myexpense.csv';
-        a.click();
-      } else {
-        throw new Error(res.data.message);
-      }
-    })
+    const response = await axios.get('http://localhost:3000/expense/download', { headers: { 'Authorization': token } });
+    if (response.status === 200) {
+      loadPreviousDownloads();
+      downloadFile(response.data.fileURL, 'myexpense.csv');
+    } else {
+      throw new Error(response.data.message);
+    }
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
 }
 
-// Previous Downloads
+function downloadFile(fileURL, filename) {
+  const a = document.createElement('a');
+  a.href = fileURL;
+  a.download = filename;
+  a.click();
+}
+
 let previousDownloadsPage = 1;
 const previousDownloadsSize = 5;
-const previousDownloadsPrevPage = document.getElementById('previousDownloadsPrevPage');
-const previousDownloadsNextPage = document.getElementById('previousDownloadsNextPage');
-const previousDownloadsPageNumber = document.getElementById('previousDownloadsPageNumber');
-const previousDownloadsBtn = document.getElementById('previousDownloadsBtn');
 
-previousDownloadsPrevPage.addEventListener('click', async function() {
+document.getElementById('previousDownloadsPrevPage').addEventListener('click', async function () {
   if (previousDownloadsPage > 1) {
     previousDownloadsPage--;
-    loadPreviousDownloads();
+    await loadPreviousDownloads();
   }
 });
 
-previousDownloadsNextPage.addEventListener('click', async function() {
+document.getElementById('previousDownloadsNextPage').addEventListener('click', async function () {
   previousDownloadsPage++;
-  loadPreviousDownloads();
+  await loadPreviousDownloads();
 });
 
-previousDownloadsBtn.addEventListener('click', function() {
-  var previousDownloadsTable = document.getElementById('previousDownloadsTable');
+document.getElementById('previousDownloadsBtn').addEventListener('click', function () {
+  const previousDownloadsTable = document.getElementById('previousDownloadsTable');
+  previousDownloadsTable.style.display = previousDownloadsTable.style.display === 'none' ? 'block' : 'none';
   loadPreviousDownloads();
-  if (previousDownloadsTable.style.display === 'none') {
-    previousDownloadsTable.style.display = 'block';
-  } else {
-    previousDownloadsTable.style.display = 'none';
-  }
 });
 
 async function loadPreviousDownloads() {
   try {
     const response = await axios.get(`http://localhost:3000/expense/getDownloads?page=${previousDownloadsPage}&pageSize=${previousDownloadsSize}`, { headers: { 'Authorization': token } });
-    const previousDownloads = response.data;
-    const tableBody = document.getElementById('previousDownloadsTableBody');
-    tableBody.innerHTML = ''; // Clear existing rows
-
-    previousDownloads.forEach(download => {
-      const row = document.createElement('tr');
-      row.classList.add('text-center');
-
-      const dateCell = document.createElement('td');
-      dateCell.classList.add('px-4', 'py-2', 'text-gray-600');
-      dateCell.textContent = new Date(download.createdAt).toLocaleString();
-
-      const linkCell = document.createElement('td');
-      linkCell.classList.add('px-4', 'py-2', 'text-gray-600');
-      const link = document.createElement('a');
-      link.href = download.fileURL;
-      link.textContent = 'Download';
-      link.classList.add('text-purple-600', 'hover:underline');
-      linkCell.appendChild(link);
-
-      row.appendChild(dateCell);
-      row.appendChild(linkCell);
-
-      tableBody.appendChild(row);
-    });
-    previousDownloadsPageNumber.textContent = previousDownloadsPage;
+    populatePreviousDownloadsTable(response.data);
+    document.getElementById('previousDownloadsPageNumber').textContent = previousDownloadsPage;
   } catch (err) {
     console.error(err);
   }
+}
+
+function populatePreviousDownloadsTable(downloads) {
+  const tableBody = document.getElementById('previousDownloadsTableBody');
+  tableBody.innerHTML = '';
+  downloads.forEach(download => {
+    const row = document.createElement('tr');
+    row.classList.add('text-center');
+
+    const dateCell = document.createElement('td');
+    dateCell.classList.add('px-4', 'py-2', 'text-gray-600');
+    dateCell.textContent = new Date(download.createdAt).toLocaleString();
+
+    const linkCell = document.createElement('td');
+    linkCell.classList.add('px-4', 'py-2', 'text-gray-600');
+    const link = document.createElement('a');
+    link.href = download.fileURL;
+    link.textContent = 'Download';
+    link.classList.add('text-purple-600', 'hover:underline');
+    linkCell.appendChild(link);
+
+    row.appendChild(dateCell);
+    row.appendChild(linkCell);
+
+    tableBody.appendChild(row);
+  });
 }
