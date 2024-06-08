@@ -1,4 +1,26 @@
 const token = localStorage.getItem('token');
+const rowsPerPage = document.getElementById('rowsPerPage');
+
+function getRowsPerPage() {
+  const savedRowsPerPage = localStorage.getItem('rowsPerPage');
+  return savedRowsPerPage ? parseInt(savedRowsPerPage) : 5;
+}
+
+function setRowsPerPage(value) {
+  localStorage.setItem('rowsPerPage', value)
+}
+
+// Set the dropdown value based on local storage
+rowsPerPage.value = getRowsPerPage();
+
+rowsPerPage.addEventListener('change', async function () {
+  const newRowsPerPage = parseInt(rowsPerPage.value);
+  setRowsPerPage(newRowsPerPage);
+  expenseTablePageSize = newRowsPerPage;
+  expenseTablePage = 1; // Reset to first page whenever rows per page changes
+  await renderExpenses();
+  await loadPreviousDownloads();
+});
 
 document.addEventListener('DOMContentLoaded', async function () {
   await renderExpenses();  // Default view
@@ -64,7 +86,7 @@ function replacePremiumButton() {
 }
 
 let expenseTablePage = 1;
-const expenseTablePageSize = 4;
+let expenseTablePageSize = parseInt(rowsPerPage.value);
 
 document.getElementById('expenseTablePrevPage').addEventListener('click', async function () {
   if (expenseTablePage > 1) {
@@ -78,7 +100,7 @@ document.getElementById('expenseTableNextPage').addEventListener('click', async 
   await renderExpenses();
 });
 
-async function fetchExpense() {
+async function fetchExpenses() {
   try {
     const response = await axios.get(`http://localhost:3000/expense/getExpense?page=${expenseTablePage}&pageSize=${expenseTablePageSize}`, { headers: { "Authorization": token } });
     return response.data.expenses;
@@ -89,7 +111,7 @@ async function fetchExpense() {
 }
 
 async function renderExpenses() {
-  const expenseData = await fetchExpense();
+  const expenseData = await fetchExpenses();
   const expenseTableBody = document.getElementById('expenseTableBody');
   expenseTableBody.innerHTML = '';
 
@@ -161,7 +183,6 @@ function getRazorpayOptions(data) {
         }, { headers: { "Authorization": token } });
 
         document.getElementById('successModal').style.display = 'block';
-        document.getElementById('showLeaderboard').style.display = 'block';
 
       } catch (err) {
         console.error(err);
@@ -194,7 +215,7 @@ async function toggleLeaderboardVisibility() {
 }
 
 let leaderboardPage = 1;
-const leaderboardPageSize = 4;
+const leaderboardPageSize = 10;
 
 document.getElementById('leaderboardPrevPage').addEventListener('click', async function () {
   if (leaderboardPage > 1) {
@@ -255,7 +276,7 @@ function downloadFile(fileURL, filename) {
 }
 
 let previousDownloadsPage = 1;
-const previousDownloadsSize = 5;
+let previousDownloadsSize = 5;
 
 document.getElementById('previousDownloadsPrevPage').addEventListener('click', async function () {
   if (previousDownloadsPage > 1) {
