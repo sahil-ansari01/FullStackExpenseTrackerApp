@@ -86,7 +86,7 @@ function replacePremiumButton() {
 }
 
 let expenseTablePage = 1;
-let expenseTablePageSize = parseInt(rowsPerPage.value);
+let expenseTablePageSize = getRowsPerPage();
 
 document.getElementById('expenseTablePrevPage').addEventListener('click', async function () {
   if (expenseTablePage > 1) {
@@ -120,8 +120,9 @@ async function renderExpenses() {
       const newRow = createExpenseRow(expense);
       expenseTableBody.appendChild(newRow);
     });
-    document.getElementById('expenseTablePageNumber').textContent = expenseTablePage;
   }
+  
+  document.getElementById('expenseTablePageNumber').textContent = expenseTablePage;
 }
 
 function createExpenseRow(expense) {
