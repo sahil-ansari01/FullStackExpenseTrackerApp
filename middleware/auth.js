@@ -1,6 +1,6 @@
     const jwt = require('jsonwebtoken');
     const User = require('../models/user');
-    const secretKey = 'secretkey';
+    const secretKey = process.env.SECRET_KEY;
 
     exports.middleParseToken = async (req, res, next) => {
         const token = req.body.token;
