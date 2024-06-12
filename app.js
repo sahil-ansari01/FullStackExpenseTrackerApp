@@ -28,10 +28,6 @@ const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'),
 );
 
 app.use(cors());
-app.use(cors({
-    origin: 'http://18.206.181.58:3000' // Allow requests from this specific origin
-}));
-
   
 app.use(helmet());
 app.use((req, res, next) => {
