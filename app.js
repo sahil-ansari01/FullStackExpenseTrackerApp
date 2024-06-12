@@ -28,6 +28,10 @@ const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'),
 );
 
 app.use(cors());
+app.use((req, res, next) => {
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+    next();
+});
 
 app.use(helmet());
 app.use((req, res, next) => {
@@ -49,6 +53,11 @@ app.use('/expense', expenseRoutes);
 app.use('/purchase', purchaseRoutes);
 app.use('/premium', premiumRoutes);
 app.use('/resetpassword', passwordRoutes);
+
+app.use((req, res, next)=> {
+    console.log('URl: ', req.url);
+    res.sendFile(path.join(__dirname, `public/html/${req.url}`))
+})
 
 // Define associations
 User.hasMany(Expense);
