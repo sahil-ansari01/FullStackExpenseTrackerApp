@@ -28,15 +28,6 @@ const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'),
 );
 
 app.use(cors());
-app.use(
-    cors({
-      origin: function (origin, callback) {
-        return callback(null, true);
-      },
-      optionsSuccessStatus: 200,
-      credentials: true,
-    })
-  );
   
 app.use(helmet());
 app.use((req, res, next) => {
