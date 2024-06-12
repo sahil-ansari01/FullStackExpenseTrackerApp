@@ -32,7 +32,7 @@ const corsOptiions = {
 };
 app.use(
 cors({
-   origin: ["https://18.206.181.58:3000/"],
+   origin: ["http://18.206.181.58:3000/"],
      methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
      credentials: true,
 }));
