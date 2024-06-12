@@ -30,8 +30,10 @@ const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'),
 app.use(cors());
 app.use((req, res, next) => {
     res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+    res.setHeader('Origin-Agent-Cluster', '?1');
     next();
-});
+  });
+  
 
 app.use(helmet());
 app.use((req, res, next) => {
