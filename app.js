@@ -1,6 +1,7 @@
 require('dotenv').config();
 const path = require('path');
 const fs = require('fs');
+const cors = require('cors');
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -14,7 +15,6 @@ const Downloads = require('./models/downloads');
 const helmet = require('helmet');
 const morgan = require('morgan');
 
-const cors = require('cors');
 const app = express();
 
 const userRoutes = require('./routes/user');
@@ -26,8 +26,16 @@ const passwordRoutes = require('./routes/password');
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), 
     {flags: 'a'}
 );
-
-app.use(cors());
+const corsOptiions = {
+  origin: true,
+  Credentials: true,
+};
+app.use(
+cors({
+   origin: ["https://18.206.181.58:3000/"],
+     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+     credentials: true,
+}));
   
 app.use(helmet());
 app.use((req, res, next) => {
@@ -52,7 +60,7 @@ app.use('/resetpassword', passwordRoutes);
 
 app.use((req, res, next)=> {
     console.log('URl: ', req.url);
-    res.sendFile(path.join(__dirname, `public/html/${req.url}`))
+    res.sendFile(path.join(__dirname, public/html/${req.url}))
 })
 
 // Define associations
