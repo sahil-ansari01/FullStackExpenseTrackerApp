@@ -52,7 +52,7 @@ exports.forgetPassword = async (req, res, next) => {
             to: receivers,
             subject: 'Reset password link',
             textContent: `
-            This is your reset password link: http://localhost:3000/resetpassword/${resetRequestId}
+            This is your reset password link: http://18.206.181.58:3000/resetpassword/${resetRequestId}
             `
         });
 

@@ -40,7 +40,7 @@ async function handleExpenseFormSubmit(event) {
   const expenseDetails = { spentAmount, description, category };
 
   try {
-    await axios.post('http://localhost:3000/expense/postExpense', expenseDetails, { headers: { "Authorization": token } });
+    await axios.post('http://18.206.181.58:3000/expense/postExpense', expenseDetails, { headers: { "Authorization": token } });
     await renderExpenses();  // Refresh view after adding expense
     await showLeaderboard();
   } catch (err) {
@@ -58,7 +58,7 @@ function resetFormFields() {
 
 async function checkPremiumStatus() {
   try {
-    const response = await axios.get('http://localhost:3000/premium/premiumstatus', { headers: { "Authorization": token } });
+    const response = await axios.get('http://18.206.181.58:3000/premium/premiumstatus', { headers: { "Authorization": token } });
     if (response.data.isPremium) {
       showPremiumFeatures();
       replacePremiumButton();
@@ -102,7 +102,7 @@ document.getElementById('expenseTableNextPage').addEventListener('click', async 
 
 async function fetchExpenses() {
   try {
-    const response = await axios.get(`http://localhost:3000/expense/getExpense?page=${expenseTablePage}&pageSize=${expenseTablePageSize}`, { headers: { "Authorization": token } });
+    const response = await axios.get(`http://18.206.181.58:3000/expense/getExpense?page=${expenseTablePage}&pageSize=${expenseTablePageSize}`, { headers: { "Authorization": token } });
     return response.data.expenses;
   } catch (err) {
     console.error(err);
@@ -150,7 +150,7 @@ document.getElementById("expenseTableBody").addEventListener("click", async func
 
 async function deleteExpense(expenseId) {
   try {
-    await axios.delete(`http://localhost:3000/expense/deleteExpense/${expenseId}`, { headers: { "Authorization": token } });
+    await axios.delete(`http://18.206.181.58:3000/expense/deleteExpense/${expenseId}`, { headers: { "Authorization": token } });
   } catch (err) {
     console.error(err);
   }
@@ -161,7 +161,7 @@ document.getElementById('rzp-button1').addEventListener('click', handlePremiumPu
 async function handlePremiumPurchase(e) {
   e.preventDefault();
   try {
-    const response = await axios.get('http://localhost:3000/purchase/premiummembership', { headers: { "Authorization": token } });
+    const response = await axios.get('http://18.206.181.58:3000/purchase/premiummembership', { headers: { "Authorization": token } });
     const options = getRazorpayOptions(response.data);
     const rzp1 = new Razorpay(options);
     rzp1.open();
@@ -178,7 +178,7 @@ function getRazorpayOptions(data) {
     order_id: data.order.id,
     handler: async function (razorpayResponse) {
       try {
-        await axios.post('http://localhost:3000/purchase/updatetransactionstatus', {
+        await axios.post('http://18.206.181.58:3000/purchase/updatetransactionstatus', {
           order_id: data.order.id,
           payment_id: razorpayResponse.razorpay_payment_id,
         }, { headers: { "Authorization": token } });
@@ -232,7 +232,7 @@ document.getElementById('leaderboardNextPage').addEventListener('click', async f
 
 async function showLeaderboard() {
   try {
-    const response = await axios.get(`http://localhost:3000/premium/showLeaderboard?page=${leaderboardPage}&pageSize=${leaderboardPageSize}`, { headers: { "Authorization": token } });
+    const response = await axios.get(`http://18.206.181.58:3000/premium/showLeaderboard?page=${leaderboardPage}&pageSize=${leaderboardPageSize}`, { headers: { "Authorization": token } });
     populateLeaderboardTable(response.data);
     document.getElementById('leaderboardPageNumber').textContent = leaderboardPage;
   } catch (err) {
@@ -257,7 +257,7 @@ function populateLeaderboardTable(userDetails) {
 
 async function download() {
   try {
-    const response = await axios.get('http://localhost:3000/expense/download', { headers: { 'Authorization': token } });
+    const response = await axios.get('http://18.206.181.58:3000/expense/download', { headers: { 'Authorization': token } });
     if (response.status === 200) {
       loadPreviousDownloads();
       downloadFile(response.data.fileURL, 'myexpense.csv');
@@ -299,7 +299,7 @@ document.getElementById('previousDownloadsBtn').addEventListener('click', functi
 
 async function loadPreviousDownloads() {
   try {
-    const response = await axios.get(`http://localhost:3000/expense/getDownloads?page=${previousDownloadsPage}&pageSize=${previousDownloadsSize}`, { headers: { 'Authorization': token } });
+    const response = await axios.get(`http://18.206.181.58:3000/expense/getDownloads?page=${previousDownloadsPage}&pageSize=${previousDownloadsSize}`, { headers: { 'Authorization': token } });
     populatePreviousDownloadsTable(response.data);
     document.getElementById('previousDownloadsPageNumber').textContent = previousDownloadsPage;
   } catch (err) {

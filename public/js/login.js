@@ -13,7 +13,7 @@ async function login(e) {
             password: e.target.password.value
         };
 
-        const res = await axios.post('http://localhost:3000/user/login', loginDetails);
+        const res = await axios.post('http://18.206.181.58:3000/user/login', loginDetails);
         
         if (res.status === 200) {
             alert(res.data.message);
@@ -36,7 +36,7 @@ async function submitForgotPassword(event) {
         event.preventDefault();
         const email = document.getElementById('forgotEmail').value;
         
-        const res = await axios.post('http://localhost:3000/resetpassword/forgetpassword', { email }, { headers: {'Authentication': token }});
+        const res = await axios.post('http://18.206.181.58:3000/resetpassword/forgetpassword', { email }, { headers: {'Authentication': token }});
         if (res.status === 200) {
             alert('Password reset link sent to your email');
             document.getElementById('forgotPasswordForm').style.display = 'none';
