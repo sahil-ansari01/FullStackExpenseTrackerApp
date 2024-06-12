@@ -60,7 +60,7 @@ app.use('/resetpassword', passwordRoutes);
 
 app.use((req, res, next)=> {
     console.log('URl: ', req.url);
-    res.sendFile(path.join(__dirname, public/html/${req.url}))
+    res.sendFile(path.join(__dirname, `public/html/${req.url}`))
 })
 
 // Define associations
