@@ -33,10 +33,10 @@ app.use('/purchase', purchaseRoutes);
 app.use('/premium', premiumRoutes);
 app.use('/resetpassword', passwordRoutes);
 
-
 app.use((req, res) => {
     res.sendFile(path.join(__dirname, `public/html/${req.url}`))
 })
+
 // Define associations
 User.hasMany(Expense);
 Expense.belongsTo(User);
