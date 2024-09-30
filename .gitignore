@@ -4,9 +4,5 @@
 #modules
 node_modules
 
-#packages
-package-lock.json
-package.json
-
 #logs
 access.log

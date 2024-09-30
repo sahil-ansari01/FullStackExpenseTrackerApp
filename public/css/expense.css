@@ -7,6 +7,9 @@ body {
 
 .btn-primary {
   background-color: #805AD5;
+  padding: 5px 10px;
+  margin-bottom: 5px; 
+  border-radius: 5px;
 }
 .btn-primary:hover {
   background-color: #6B46C1;
@@ -19,6 +22,16 @@ body {
 }
 .btn-danger:hover {
   background-color: #DC2626;
+}
+.btn-edit {
+  background-color: #805AD5;
+  padding: 5px 10px;
+  margin-bottom: 5px; 
+  border-radius: 5px;
+  color: #fff;
+}
+.btn-edit:hover {
+  background-color: #6B46C1;
 }
 .premium-user {
   width: 50%;
