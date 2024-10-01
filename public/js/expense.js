@@ -127,33 +127,33 @@ async function renderExpenses() {
 
 function createExpenseRow(expense) {
   const newRow = document.createElement("tr");
-  newRow.dataset.id = expense.id;
+  newRow.dataset.id = expense._id; // Use _id for MongoDB ObjectId
   newRow.innerHTML = `
-    <td class="text-center">${expense.spentAmount}</td>
-    <td class="text-center">${expense.description}</td>
-    <td class="text-center">${expense.category}</td>
-    <td class="text-center"><button class="btn btn-danger delete-btn">Delete</button></td>
-    <td class="text-center"><button class="btn btn-edit edit-btn">Edit</button></td>
+      <td class="text-center">${expense.spentAmount}</td>
+      <td class="text-center">${expense.description}</td>
+      <td class="text-center">${expense.category}</td>
+      <td class="text-center"><button class="btn btn-danger delete-btn">Delete</button></td>
   `;
   return newRow;
 }
 
 document.getElementById("expenseTableBody").addEventListener("click", async function (event) {
   if (event.target.classList.contains("delete-btn")) {
-    const row = event.target.closest("tr");
-    const expenseId = row.dataset.id;
-    await deleteExpense(expenseId);
-    row.remove();
-    await renderExpenses();
-    await showLeaderboard();
+      const row = event.target.closest("tr");
+      const expenseId = row.dataset.id; // Get the expense ID from the row's data attribute
+      await deleteExpense(expenseId); // Call the delete function
+      row.remove(); // Remove the row from the table
+      await renderExpenses(); // Refresh the expenses view
+      await showLeaderboard(); // Optionally refresh the leaderboard
   }
 });
 
 async function deleteExpense(expenseId) {
   try {
-    await axios.delete(`http://localhost:3000/expense/deleteExpense/${expenseId}`, { headers: { "Authorization": token } });
+      await axios.delete(`http://localhost:3000/expense/deleteExpense/${expenseId}`, { headers: { "Authorization": token } });
   } catch (err) {
-    console.error(err);
+      console.error('Error deleting expense:', err);
+      alert('Failed to delete expense. Please try again.'); // Notify the user of the error
   }
 }
 

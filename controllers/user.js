@@ -2,7 +2,6 @@ const path = require('path');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const AWS = require('aws-sdk');
 
 function isStringValidate(string) {
     return string === undefined || string.length === 0;
@@ -28,15 +27,15 @@ exports.signup = async (req, res, next) => {
             });
         }
 
-        const existingUser = await User.findOne({ where: { email: email } });
+        const existingUser = await User.findOne({ email: email });
         if (existingUser) {
             return res.status(400).json({ error: "User already exists" });
         }
 
-        bcrypt.hash(password, 10, async (err, hash) => {
-            await User.create({ name, email, password: hash, ispremiumuser: false });
-            res.status(201).json({ message: 'User created successfully!' });
-        })
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({ name, email, password: hashedPassword, ispremiumuser: false });
+        await newUser.save();
+        res.status(201).json({ message: 'User created successfully!' });
 
     } catch (err) {
         console.log(err);
@@ -54,37 +53,31 @@ exports.getLogin = async (req, res, next) => {
     }
 };
 
-function generateAccessToken(id,name) {
-    return jwt.sign({userId : id , name: name}, process.env.SECRET_KEY)
+function generateAccessToken(id, name) {
+    return jwt.sign({userId : id , name: name}, process.env.SECRET_KEY);
 }
 
 exports.postLogin = async (req, res, next) => {
     try {
-        const { email, password, id } = req.body;
+        const { email, password } = req.body;
         if (isStringValidate(email) || isStringValidate(password)) {
             return res.status(400).json({message: 'Email or Password is missing!'});
         }
         
-        const user = await User.findAll({ where: { email } });
-        if (user.length > 0) {
-            bcrypt.compare(password, user[0].password, (err, result) => {
-                if (err) {
-                    throw new Error('Something went wrong!');
-                }
-
-                const token = generateAccessToken(user[0].id, user[0].name);
-                if (result === true) {
-                    return res.status(200).json({success: true, message: 'User logged in successfully!', token: token})
-                } else {
-                    return res.status(400).json({success: false, message: 'Password is incorrect!'})
-                }
-            })
+        const user = await User.findOne({ email });
+        if (user) {
+            const result = await bcrypt.compare(password, user.password);
+            if (result) {
+                const token = generateAccessToken(user._id, user.name);
+                return res.status(200).json({success: true, message: 'User logged in successfully!', token: token});
+            } else {
+                return res.status(400).json({success: false, message: 'Password is incorrect!'});
+            }
         } else {
-            res.status(404).json({success: false, message: 'User do not exist!'})
+            res.status(404).json({success: false, message: 'User does not exist!'});
         }
 
     } catch (err) {
-        res.status(500).json({success: false, message: err})
+        res.status(500).json({success: false, message: err.message});
     }
-}
-
+};

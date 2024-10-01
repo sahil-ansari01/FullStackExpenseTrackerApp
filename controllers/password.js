@@ -1,10 +1,10 @@
 const path = require('path');
 const Sib = require('sib-api-v3-sdk');
-const {v4 : uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 const ForgetPasswordRequest = require('../models/forgetPasswordRequest');
 const User = require('../models/user');
-const bycrpt =  require('bcrypt');
-const sequelize = require('../util/database');
+const bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
 
 const client = Sib.ApiClient.instance;
 const apiKey = client.authentications['api-key'];
@@ -13,28 +13,27 @@ apiKey.apiKey = process.env.API_KEY;
 const tranEmailApi = new Sib.TransactionalEmailsApi();
 
 exports.forgetPassword = async (req, res, next) => {
-    const t = await sequelize.transaction();
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
         const receiversEmail = req.body.email;
         if (!receiversEmail) {
             return res.status(400).json({ error: 'Email is required' });
         }
 
-        const user = await User.findOne({ where: { email: receiversEmail }});
+        const user = await User.findOne({ email: receiversEmail });
         if (!user) {
             return res.status(404).json({error: 'User not found!'});
         }   
 
         const resetRequestId = uuidv4();
 
-        await ForgetPasswordRequest.create(
-           { 
-                id: resetRequestId,
-                userId: user.id,
-                isActive: true
-            },
-            { transaction: t }
-        )
+        const forgetPasswordRequest = new ForgetPasswordRequest({
+            _id: resetRequestId,
+            userId: user._id,
+            isActive: true
+        });
+        await forgetPasswordRequest.save({ session });
 
         const sender = {
             email: 'sahilansari66435@gmail.com',
@@ -56,24 +55,26 @@ exports.forgetPassword = async (req, res, next) => {
             `
         });
 
-        await t.commit();
+        await session.commitTransaction();
         console.log(sendEmail);
         return res.status(200).json({ message: 'Password reset link sent successfully' });
 
     } catch (err) {
-        await t.rollback();
+        await session.abortTransaction();
         console.error(err);
         return res.status(500).json({ error: 'Internal server error' });
+    } finally {
+        session.endSession();
     }
 };
 
 exports.getResetPassword = async (req, res, next) => {
     try {
         const resetRequestId = req.params.id;
-        const resetRequest = await ForgetPasswordRequest.findOne({ where: { id: resetRequestId, isActive: true }});
+        const resetRequest = await ForgetPasswordRequest.findOne({ _id: resetRequestId, isActive: true });
 
         if (!resetRequest) {
-                return res.status(400).json({ error: 'Invalid or expired reset link!'})
+            return res.status(400).json({ error: 'Invalid or expired reset link!'});
         }
 
         res.sendFile(path.join(__dirname, '..', 'public', 'html', 'resetpassword.html'));
@@ -81,38 +82,44 @@ exports.getResetPassword = async (req, res, next) => {
         console.log(err);
         return res.status(500).json({ error: 'Internal server error!'});
     }
-}
+};
 
 exports.postResetPassword = async(req, res, next) => {
-    const t = await sequelize.transaction();
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
     try {
         const resetRequestId = req.params.id;
         const { password } = req.body;
 
-        const resetRequest = await ForgetPasswordRequest.findOne({ where: { id: resetRequestId, isActive: true}, transaction: t });
+        const resetRequest = await ForgetPasswordRequest.findOne({ _id: resetRequestId, isActive: true }).session(session);
 
         if(!resetRequest) {
-            return res.status(400).json({ error: 'Invalid or expired reset link'})
+            return res.status(400).json({ error: 'Invalid or expired reset link'});
         }
 
-        const user = await User.findByPk(resetRequest.userId, { transaction: t })
+        const user = await User.findById(resetRequest.userId).session(session);
 
         if(!user) {
             return res.status(404).json({ error: 'User not found!'});
         }
 
-        const hashedPassword = await bycrpt.hash(password, 12);
+        const hashedPassword = await bcrypt.hash(password, 12);
 
-        await user.update({ password: hashedPassword }, { transaction: t });
-        await resetRequest.update({ isActive: false }, { transaction: t });
+        user.password = hashedPassword;
+        await user.save();
 
-        await t.commit();
+        resetRequest.isActive = false;
+        await resetRequest.save();
+
+        await session.commitTransaction();
         return res.status(200).json({ success: true, message: 'Password reset successful!' });
 
     } catch (err) {
-        await t.rollback();
+        await session.abortTransaction();
         console.log(err);
-        res.status(500).json({ error: 'Internal server error!'})
+        res.status(500).json({ error: 'Internal server error!'});
+    } finally {
+        session.endSession();
     }
-}
+};
